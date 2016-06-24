@@ -1,3 +1,4 @@
+/*
 #include "hashed.h"
 #include <boost/unordered_set.hpp>
 
@@ -20,26 +21,25 @@ hash_value(const A& a)
     boost::hash_combine(hash, a.y);
     return hash;
 }
+*/
 
-
-
-#include "board.h"
+#include "viewer.h"
 #include <iostream>
+#include <QApplication>
 
 using std::cout;
 using std::endl;
 
 int main(int argc, char* argv[])
 {
-    typedef boost::unordered_set<A> Prout;
-    Prout prout;
-    A xx = {1,1.2};
-    A yy = {2,3.};
-    cout << (xx== yy) << endl;
-    prout.insert(xx);
-    cout << prout.size() << endl;
-    Board board(3);
+    QApplication app(argc, argv);
+
+    Board board(11);
     cout << lemon::countNodes(board.graph) << "/" << lemon::countEdges(board.graph) << endl;
-    return 0;
+
+    Viewer viewer(board);
+    viewer.show();
+
+    return app.exec();
 }
 

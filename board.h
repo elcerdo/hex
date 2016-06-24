@@ -10,6 +10,7 @@ struct Board
     typedef Graph::NodeMap<Coord> Coords;
     typedef Graph::Node Node;
 
+		int size;
     Graph graph;
     Coords coords;
 

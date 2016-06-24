@@ -11,18 +11,27 @@ find_package(Boost COMPONENTS
 
 find_package(LEMON
     REQUIRED)
-
 include_directories(${LEMON_INCLUDE_DIRS})
 link_directories(${LEMON_LIBRARY_DIRS})
+
+find_package(Qt4 REQUIRED)
+include(${QT_USE_FILE})
+
+qt4_wrap_cpp(sources_moc_gui
+    viewer.h
+    )
 
 add_executable(hex
     main.cpp
     board.cpp
+    viewer.cpp
+    ${sources_moc_gui}
     )
 
 target_link_libraries(hex
     ${LEMON_LIBRARIES}
     ${Boost_REGEX_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    QtCore QtGui
     )
 

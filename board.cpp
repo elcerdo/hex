@@ -2,7 +2,7 @@
 
 #include <boost/unordered_map.hpp>
 
-Board::Board(const int size) : graph(), coords(graph)
+Board::Board(const int size) : size(size), graph(), coords(graph)
 {
     typedef boost::unordered_map<Coord,Node> Nodes;
 
