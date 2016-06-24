@@ -21,6 +21,9 @@ hash_value(const A& a)
     return hash;
 }
 
+
+
+#include "board.h"
 #include <iostream>
 
 using std::cout;
@@ -35,6 +38,8 @@ int main(int argc, char* argv[])
     cout << (xx== yy) << endl;
     prout.insert(xx);
     cout << prout.size() << endl;
+    Board board(3);
+    cout << lemon::countNodes(board.graph) << "/" << lemon::countEdges(board.graph) << endl;
     return 0;
 }
 

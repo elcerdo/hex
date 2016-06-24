@@ -17,6 +17,7 @@ link_directories(${LEMON_LIBRARY_DIRS})
 
 add_executable(hex
     main.cpp
+    board.cpp
     )
 
 target_link_libraries(hex
