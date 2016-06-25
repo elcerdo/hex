@@ -18,12 +18,14 @@ find_package(Qt4 REQUIRED)
 include(${QT_USE_FILE})
 
 qt4_wrap_cpp(sources_moc_gui
+    scene.h
     viewer.h
     )
 
 add_executable(hex
     main.cpp
     board.cpp
+    scene.cpp
     viewer.cpp
     ${sources_moc_gui}
     )

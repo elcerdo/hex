@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
     cout << lemon::countNodes(board.graph) << "/" << lemon::countEdges(board.graph) << endl;
 
     Viewer viewer(board);
+    viewer.resize(800, 600);
     viewer.show();
 
     return app.exec();

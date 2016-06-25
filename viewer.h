@@ -1,17 +1,16 @@
 #pragma once
 
-#include "board.h"
-#include <QWidget>
+#include "scene.h"
+#include <QGraphicsView>
 #include <QPolygonF>
 
-class Viewer : public QWidget
+class Viewer : public QGraphicsView
 {
     Q_OBJECT
     public:
         Viewer(const Board& board, QWidget* parent=NULL);
 
     protected:
-        void paintEvent(QPaintEvent* event);
         void keyPressEvent(QKeyEvent* event);
 
     public:
@@ -21,5 +20,6 @@ class Viewer : public QWidget
         const Board& board;
         QPolygonF polygon;
 
+        QGraphicsScene* scene;
 };
 
