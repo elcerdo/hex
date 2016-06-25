@@ -1,8 +1,15 @@
 #pragma once
 
-#include "scene.h"
+#include "board.h"
 #include <QGraphicsView>
-#include <QPolygonF>
+#include <QGraphicsPolygonItem>
+
+class Tile : public QGraphicsPolygonItem
+{
+    public:
+        Tile(const QPolygonF& polygon, QGraphicsItem* item=NULL);
+
+};
 
 class Viewer : public QGraphicsView
 {
@@ -19,7 +26,5 @@ class Viewer : public QGraphicsView
     protected:
         const Board& board;
         QPolygonF polygon;
-
-        QGraphicsScene* scene;
 };
 

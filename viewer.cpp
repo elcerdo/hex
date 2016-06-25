@@ -3,10 +3,41 @@
 #include <QPainter>
 #include <QKeyEvent>
 #include <QDebug>
+#include <cmath>
 
-Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(true), board(board), scene(NULL), QGraphicsView(NULL, parent)
+Tile::Tile(const QPolygonF& polygon, QGraphicsItem* item) : QGraphicsPolygonItem(polygon, item)
 {
-    scene = new Scene(board, this);
+    setPen(QPen(Qt::black));
+    setBrush(QBrush(Qt::gray));
+}
+
+QPointF
+project(const Board::Coord& coord)
+{
+    static const QPointF ex(1+std::cos(M_PI/3), sin(M_PI/3));
+    static const QPointF ey(1+std::cos(M_PI/3), -sin(M_PI/3));
+    return coord.first*ex + coord.second*ey;
+}
+
+Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(true), board(board), QGraphicsView(NULL, parent)
+{
+    for (int kk=0; kk<6; kk++)
+    {
+        const double angle = 2*M_PI*static_cast<double>(kk)/6;
+        polygon << .9*QPointF(std::cos(angle), std::sin(angle));
+    }
+
+    QGraphicsScene* scene = new QGraphicsScene(this);
+    {
+        typedef Board::Graph::NodeIt NodeIt;
+        for (NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
+        {
+            Tile* item = new Tile(polygon);
+            item->setPos(project(board.coords[ni]));
+            scene->addItem(item);
+        }
+
+    }
 
     setScene(scene);
     setRenderHint(QPainter::Antialiasing);
