@@ -26,6 +26,12 @@ Tile::setState(const int state_)
     update();
 }
 
+Board::Graph::Node
+Tile::getNode() const
+{
+    return node;
+}
+
 void
 Tile::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
@@ -55,6 +61,15 @@ Tile::update()
     }
 
     QGraphicsPolygonItem::update();
+
+    QGraphicsScene* scene_ = scene();
+    if (!scene_) return;
+    for (QGraphicsView* view : scene_->views())
+    {
+        Viewer* viewer = dynamic_cast<Viewer*>(view);
+        if (!viewer) continue;
+        viewer->notifyChange(*this);
+    }
 }
 
 QPointF
@@ -65,18 +80,18 @@ project(const Board::Coord& coord)
     return coord.first*ex + coord.second*ey;
 }
 
-int
-initial_state(const Board& board, const Board::Graph::Node& node)
+bool
+is_interactive(const Board& board, const Board::Graph::Node& node)
 {
     for (int state=0; state<board.borders.size(); state++)
     {
-        if (board.borders[state].first == node) return state;
-        if (board.borders[state].second == node) return state;
+        if (board.borders[state].first == node) return false;
+        if (board.borders[state].second == node) return false;
     }
-    return 2;
+    return true;
 }
 
-Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(true), board(board), QGraphicsView(NULL, parent)
+Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(false), board(board), QGraphicsView(NULL, parent)
 {
     for (int kk=0; kk<6; kk++)
     {
@@ -89,8 +104,7 @@ Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(true), board(bo
         typedef Board::Graph::NodeIt NodeIt;
         for (NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
         {
-            const int state = initial_state(board, ni);
-            Tile* item = new Tile(ni, state, state == board.borders.size(), polygon);
+            Tile* item = new Tile(ni, board.borders.size(), is_interactive(board, ni), polygon);
             item->setPos(project(board.coords[ni]));
             scene->addItem(item);
         }
@@ -101,6 +115,39 @@ Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(true), board(bo
     setRenderHint(QPainter::Antialiasing);
     setRenderHint(QPainter::HighQualityAntialiasing);
     scale(20, 20);
+}
+
+void
+Viewer::displayState(const BoardState& state)
+{
+    for (QGraphicsItem* item : scene()->items())
+    {
+        Tile* tile = dynamic_cast<Tile*>(item);
+        Q_ASSERT(tile);
+        tile->setState( state.states[tile->getNode()] );
+    }
+}
+
+void
+Viewer::reconstructState(BoardState& state) const
+{
+    for (const QGraphicsItem* item : scene()->items())
+    {
+        const Tile* tile = dynamic_cast<const Tile*>(item);
+        Q_ASSERT(tile);
+        state.states[tile->getNode()] = tile->getState();
+    }
+}
+
+void
+Viewer::notifyChange(const Tile& tile)
+{
+    qDebug() << "notify";
+
+    BoardState state(board);
+    reconstructState(state);
+    const bool victory = state.checkVictories();
+    qDebug() << victory;
 }
 
 void

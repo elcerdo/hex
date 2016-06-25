@@ -77,3 +77,46 @@ Board::Board(const int size) : size(size), graph(), coords(graph)
     }
 }
 
+SelectorMap::SelectorMap(const SelectorMap::InputMap& input_map, const int& selection) : input_map(input_map), selection(selection)
+{
+}
+
+SelectorMap::Value
+SelectorMap::operator[](const SelectorMap::Key& key) const
+{
+    return input_map[key] == selection;
+}
+
+#include <iostream>
+using namespace std;
+
+BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.borders.size()), pred_map(board_.graph, lemon::INVALID)
+{
+    for (int player=0; player<board.borders.size(); player++)
+    {
+        states[board.borders[player].first] = player;
+        states[board.borders[player].second]= player;
+    }
+};
+
+bool
+BoardState::checkVictories()
+{
+    bool any_victory = false;
+
+    victories.clear();
+    for (int player=0; player<board.borders.size(); player++)
+    {
+        SelectorMap selector(states, player);
+        Subgraph subgraph(board.graph, selector);
+
+        const bool victory = Bfs(subgraph)
+            .run(board.borders[player].first, board.borders[player].second);
+
+        any_victory |= victory;
+        victories.push_back(victory);
+    }
+
+
+    return any_victory;
+}

@@ -34,11 +34,15 @@ int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    Board board(11);
+    Board board(4);
     cout << lemon::countNodes(board.graph) << "/" << lemon::countEdges(board.graph) << endl;
 
     Viewer viewer(board);
     viewer.resize(800, 600);
+
+    BoardState state(board);
+    viewer.displayState(state);
+
     viewer.show();
 
     return app.exec();
