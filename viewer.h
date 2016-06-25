@@ -18,7 +18,7 @@ class Tile : public QGraphicsPolygonItem
     protected:
         Board::Graph::Node node;
         int state;
-				bool interactive;
+        bool interactive;
 };
 
 class Viewer : public QGraphicsView
@@ -29,6 +29,7 @@ class Viewer : public QGraphicsView
 
     protected:
         void keyPressEvent(QKeyEvent* event);
+        void drawForeground(QPainter* painter, const QRectF& rect);
 
     public:
         bool draw_edges;

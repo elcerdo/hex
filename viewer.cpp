@@ -110,6 +110,7 @@ Viewer::keyPressEvent(QKeyEvent* event)
     {
         draw_edges = !draw_edges;
         update();
+        viewport()->update();
         event->accept();
         return;
     }
@@ -117,19 +118,18 @@ Viewer::keyPressEvent(QKeyEvent* event)
     QGraphicsView::keyPressEvent(event);
 }
 
-/*
-    if (draw_edges)
+void
+Viewer::drawForeground(QPainter* painter, const QRectF& /*rect*/)
+{
+    if (!draw_edges) return;
+
+    painter->setPen(Qt::red);
+    typedef Board::Graph::EdgeIt EdgeIt;
+    for (EdgeIt ei(board.graph); ei!=lemon::INVALID; ++ei)
     {
-        painter.save();
-        painter.setPen(Qt::red);
-        typedef Board::Graph::EdgeIt EdgeIt;
-        for (EdgeIt ei(board.graph); ei!=lemon::INVALID; ++ei)
-        {
-            const Board::Coord coord_aa = board.coords[board.graph.u(ei)];
-            const Board::Coord coord_bb = board.coords[board.graph.v(ei)];
-            painter.drawLine(project(coord_aa), project(coord_bb));
-        }
-        painter.restore();
+        const Board::Coord coord_aa = board.coords[board.graph.u(ei)];
+        const Board::Coord coord_bb = board.coords[board.graph.v(ei)];
+        painter->drawLine(project(coord_aa), project(coord_bb));
     }
 }
-*/
+
