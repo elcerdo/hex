@@ -9,10 +9,13 @@ struct Board
     typedef lemon::SmartGraph Graph;
     typedef Graph::NodeMap<Coord> Coords;
     typedef Graph::Node Node;
+    typedef std::pair<Node,Node> Border;
+    typedef std::vector<Border> Borders;
 
-		int size;
+    int size;
     Graph graph;
     Coords coords;
+    Borders borders;
 
     Board(const int size=11);
 };
