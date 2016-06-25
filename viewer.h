@@ -7,8 +7,18 @@
 class Tile : public QGraphicsPolygonItem
 {
     public:
-        Tile(const QPolygonF& polygon, QGraphicsItem* item=NULL);
+        Tile(const Board::Graph::Node& node, const int& state, const bool& interactive, const QPolygonF& polygon, QGraphicsItem* item=NULL);
+        int getState() const;
+        void setState(const int state);
 
+    protected:
+        void mousePressEvent(QGraphicsSceneMouseEvent* event);
+        void update();
+
+    protected:
+        Board::Graph::Node node;
+        int state;
+				bool interactive;
 };
 
 class Viewer : public QGraphicsView

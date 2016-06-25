@@ -4,11 +4,57 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <cmath>
+#include <QGraphicsSceneMouseEvent>
 
-Tile::Tile(const QPolygonF& polygon, QGraphicsItem* item) : QGraphicsPolygonItem(polygon, item)
+Tile::Tile(const Board::Graph::Node& node_, const int& state_, const bool& interactive_, const QPolygonF& polygon, QGraphicsItem* item) : node(node_), state(state_), interactive(interactive_), QGraphicsPolygonItem(polygon, item)
 {
     setPen(QPen(Qt::black));
-    setBrush(QBrush(Qt::gray));
+    update();
+}
+
+int
+Tile::getState() const
+{
+    return state;
+}
+
+void
+Tile::setState(const int state_)
+{
+    if (state_ == state) return;
+    state = state_;
+    update();
+}
+
+void
+Tile::mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+    if (!interactive) return;
+    state++;
+    state %= 3;
+    update();
+    event->accept();
+}
+
+void
+Tile::update()
+{
+    switch (state)
+    {
+        case 0:
+            setBrush(QBrush(Qt::white));
+            break;
+        case 1:
+            setBrush(QBrush(Qt::black));
+            break;
+        case 2:
+            setBrush(QBrush(Qt::gray));
+            break;
+        default:
+            Q_ASSERT(false);
+    }
+
+    QGraphicsPolygonItem::update();
 }
 
 QPointF
@@ -17,6 +63,17 @@ project(const Board::Coord& coord)
     static const QPointF ex(1+std::cos(M_PI/3), sin(M_PI/3));
     static const QPointF ey(1+std::cos(M_PI/3), -sin(M_PI/3));
     return coord.first*ex + coord.second*ey;
+}
+
+int
+initial_state(const Board& board, const Board::Graph::Node& node)
+{
+    for (int state=0; state<board.borders.size(); state++)
+    {
+        if (board.borders[state].first == node) return state;
+        if (board.borders[state].second == node) return state;
+    }
+    return 2;
 }
 
 Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(true), board(board), QGraphicsView(NULL, parent)
@@ -32,7 +89,8 @@ Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(true), board(bo
         typedef Board::Graph::NodeIt NodeIt;
         for (NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
         {
-            Tile* item = new Tile(polygon);
+            const int state = initial_state(board, ni);
+            Tile* item = new Tile(ni, state, state == board.borders.size(), polygon);
             item->setPos(project(board.coords[ni]));
             scene->addItem(item);
         }
