@@ -146,8 +146,8 @@ Viewer::notifyChange(const Tile& tile)
 
     BoardState state(board);
     reconstructState(state);
-    const bool victory = state.checkVictories();
-    qDebug() << victory;
+    const auto victories = state.checkVictories();
+    qDebug() << QVector<bool>::fromStdVector(victories);
 }
 
 void

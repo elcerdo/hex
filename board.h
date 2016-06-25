@@ -1,9 +1,6 @@
 #pragma once
 
 #include <lemon/smart_graph.h>
-#include <lemon/adaptors.h>
-#include <lemon/maps.h>
-#include <lemon/bfs.h>
 
 struct Board
 {
@@ -23,17 +20,17 @@ struct Board
     Board(const int size=11);
 };
 
-struct SelectorMap
+struct SameStateMap
 {
-    typedef Board::Graph::Node Key;
+    typedef Board::Graph::Edge Key;
     typedef bool Value;
 
     typedef Board::Graph::NodeMap<int> InputMap;
 
+    const Board::Graph& graph;
     const InputMap& input_map;
-    int selection;
 
-    SelectorMap(const InputMap& input_map, const int& selection);
+    SameStateMap(const Board::Graph& graph, const InputMap& input_map);
 
     Value operator[](const Key& key) const;
 };
@@ -41,19 +38,12 @@ struct SelectorMap
 struct BoardState
 {
     typedef Board::Graph::NodeMap<int> States;
-
-    typedef lemon::FilterNodes<const Board::Graph, const SelectorMap> Subgraph;
-    typedef lemon::Bfs<Subgraph> Bfs;
-    typedef Board::Graph::NodeMap<Board::Graph::Node> PredMap;
     typedef std::vector<bool> Victories;
 
     const Board& board;
     States states;
 
-    PredMap pred_map;
-    Victories victories;
-
     BoardState(const Board& board);
-    bool checkVictories();
+    Victories checkVictories() const;
 };
 

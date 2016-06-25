@@ -1,6 +1,8 @@
 #include "board.h"
 
 #include <boost/unordered_map.hpp>
+#include <lemon/bfs.h>
+#include <lemon/adaptors.h>
 
 Board::Board(const int size) : size(size), graph(), coords(graph)
 {
@@ -77,20 +79,17 @@ Board::Board(const int size) : size(size), graph(), coords(graph)
     }
 }
 
-SelectorMap::SelectorMap(const SelectorMap::InputMap& input_map, const int& selection) : input_map(input_map), selection(selection)
+SameStateMap::SameStateMap(const Board::Graph& graph_, const SameStateMap::InputMap& input_map_) : graph(graph_), input_map(input_map_)
 {
 }
 
-SelectorMap::Value
-SelectorMap::operator[](const SelectorMap::Key& key) const
+SameStateMap::Value
+SameStateMap::operator[](const SameStateMap::Key& key) const
 {
-    return input_map[key] == selection;
+    return input_map[graph.u(key)] == input_map[graph.v(key)];
 }
 
-#include <iostream>
-using namespace std;
-
-BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.borders.size()), pred_map(board_.graph, lemon::INVALID)
+BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.borders.size())
 {
     for (int player=0; player<board.borders.size(); player++)
     {
@@ -99,24 +98,20 @@ BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph
     }
 };
 
-bool
-BoardState::checkVictories()
+BoardState::Victories
+BoardState::checkVictories() const
 {
-    bool any_victory = false;
+    typedef lemon::FilterEdges<const Board::Graph, const SameStateMap> Subgraph;
 
-    victories.clear();
+    Victories victories;
+
+    SameStateMap selector(board.graph, states);
+    Subgraph subgraph(board.graph, selector);
     for (int player=0; player<board.borders.size(); player++)
     {
-        SelectorMap selector(states, player);
-        Subgraph subgraph(board.graph, selector);
-
-        const bool victory = Bfs(subgraph)
-            .run(board.borders[player].first, board.borders[player].second);
-
-        any_victory |= victory;
+        const bool victory = lemon::bfs(subgraph).run(board.borders[player].first, board.borders[player].second);
         victories.push_back(victory);
     }
 
-
-    return any_victory;
+    return victories;
 }
