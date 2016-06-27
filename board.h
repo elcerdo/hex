@@ -47,9 +47,14 @@ struct BoardState
     int count;
 
     BoardState(const Board& board);
+    BoardState(const BoardState& other);
     BoardState& operator=(const BoardState& other);
 
+    bool anyVictory() const;
+    std::vector<Move> getPossibleMoves() const;
     Victories checkVictories() const;
     bool playMove(const Move& move);
 };
+
+size_t hash_value(const BoardState& state);
 

@@ -1,34 +1,9 @@
-/*
-#include "hashed.h"
-#include <boost/unordered_set.hpp>
-
-struct A
-{
-    int x;
-    float y;
-
-    bool operator==(const A& other) const
-    {
-        return x == other.x && y == other.y;
-    };
-};
-
-size_t
-hash_value(const A& a)
-{
-    size_t hash = 0xaf058c2e;
-    boost::hash_combine(hash, a.x);
-    boost::hash_combine(hash, a.y);
-    return hash;
-}
-*/
-
-#include <iostream>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/positional_options.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/errors.hpp>
+#include <iostream>
 
 struct Options
 {
@@ -79,6 +54,7 @@ parse_options(int argc, char* argv[])
 #include "viewer.h"
 #include "player_qt.h"
 #include "player_random.h"
+#include "player_uct.h"
 #include "game.h"
 #include <QApplication>
 #include <QLabel>
@@ -107,6 +83,7 @@ int main(int argc, char* argv[])
     {
         if (name == "human") return static_cast<Player*>(new PlayerQt(board, viewer));
         if (name == "random") return static_cast<Player*>(new PlayerRandom(board, std::chrono::system_clock::now().time_since_epoch().count()));
+        if (name == "uct") return static_cast<Player*>(new PlayerUct(board, .1, std::chrono::system_clock::now().time_since_epoch().count()));
         cerr << "bad player name '" << name << "'" << endl;
         std::exit(1);
         return static_cast<Player*>(NULL);

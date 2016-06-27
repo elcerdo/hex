@@ -24,6 +24,7 @@ qt4_wrap_cpp(sources_moc_gui
     )
 
 add_executable(hex
+    utils.cpp
     main.cpp
     board.cpp
     viewer.cpp
@@ -31,6 +32,7 @@ add_executable(hex
     player.cpp
     player_qt.cpp
     player_random.cpp
+    player_uct.cpp
     ${sources_moc_gui}
     )
 

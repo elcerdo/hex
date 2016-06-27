@@ -84,10 +84,25 @@ SameStateMap::SameStateMap(const Board::Graph& graph_, const SameStateMap::Input
 {
 }
 
+
 SameStateMap::Value
 SameStateMap::operator[](const SameStateMap::Key& key) const
 {
     return input_map[graph.u(key)] == input_map[graph.v(key)];
+}
+
+BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.borders.size()), count(0)
+{
+    for (int player=0; player<board.borders.size(); player++)
+    {
+        states[board.borders[player].first] = player;
+        states[board.borders[player].second]= player;
+    }
+};
+
+BoardState::BoardState(const BoardState& other) : board(other.board), states(other.board.graph), count(other.count)
+{
+    lemon::mapCopy(board.graph, other.states, states);
 }
 
 BoardState&
@@ -99,14 +114,12 @@ BoardState::operator=(const BoardState& other)
     return *this;
 }
 
-BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.borders.size()), count(0)
+bool
+BoardState::anyVictory() const
 {
-    for (int player=0; player<board.borders.size(); player++)
-    {
-        states[board.borders[player].first] = player;
-        states[board.borders[player].second]= player;
-    }
-};
+    const Victories& victories = checkVictories();
+    return std::any_of(victories.begin(), victories.end(), [](const bool x) { return x; });
+}
 
 BoardState::Victories
 BoardState::checkVictories() const
@@ -136,3 +149,14 @@ BoardState::playMove(const Move& move)
     count++;
     return true;
 }
+
+size_t
+hash_value(const BoardState& state)
+{
+    size_t hash = reinterpret_cast<size_t>(&state.board);
+    boost::hash_combine(hash, state.count);
+    for (Board::Graph::NodeIt ni(state.board.graph); ni!=lemon::INVALID; ++ni)
+        boost::hash_combine(hash, state.states[ni]);
+    return hash;
+}
+

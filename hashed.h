@@ -13,8 +13,8 @@ struct HashedPair
     {
     }
 
-    const Hash hash;
-    const Value& value;
+    Hash hash;
+    Value value;
 };
 
 template <typename Value>
