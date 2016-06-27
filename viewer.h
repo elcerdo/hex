@@ -32,6 +32,10 @@ class Viewer : public QGraphicsView
 
     public slots:
         void displayState(const BoardState* state);
+        void requestPlayerMove(const int player);
+
+    signals:
+        void gotPlayerMove(const int player, const Move& move);
 
     protected:
         void keyPressEvent(QKeyEvent* event);
@@ -43,5 +47,6 @@ class Viewer : public QGraphicsView
     protected:
         const Board& board;
         QPolygonF polygon;
+        int requested_player;
 };
 

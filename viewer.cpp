@@ -91,7 +91,7 @@ is_interactive(const Board& board, const Board::Graph::Node& node)
     return true;
 }
 
-Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(false), board(board), QGraphicsView(NULL, parent)
+Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(false), board(board), QGraphicsView(NULL, parent), requested_player(-1)
 {
     for (int kk=0; kk<6; kk++)
     {
@@ -120,7 +120,7 @@ Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(false), board(b
 void
 Viewer::displayState(const BoardState* state)
 {
-		if (!state) return;
+    if (!state) return;
     for (QGraphicsItem* item : scene()->items())
     {
         Tile* tile = dynamic_cast<Tile*>(item);
@@ -141,14 +141,19 @@ Viewer::reconstructState(BoardState& state) const
 }
 
 void
+Viewer::requestPlayerMove(const int player)
+{
+    Q_ASSERT( requested_player < 0 );
+    requested_player = player;
+}
+
+void
 Viewer::notifyChange(const Tile& tile)
 {
-    qDebug() << "notify";
-
-    BoardState state(board);
-    reconstructState(state);
-    const auto victories = state.checkVictories();
-    qDebug() << QVector<bool>::fromStdVector(victories);
+    if (requested_player < 0) return;
+    qDebug() << "notify" << requested_player;
+    emit gotPlayerMove(requested_player, tile.getNode());
+    requested_player = -1;
 }
 
 void
