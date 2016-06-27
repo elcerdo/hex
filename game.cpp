@@ -46,6 +46,9 @@ GameLoop::run()
         player_current %= state.board.borders.size();
     }
 
+    const auto victories = state.checkVictories();
+    qDebug() << QVector<bool>::fromStdVector(victories);
+    qDebug() << ( victories[0] ? "white" : "black" ) << "wins!!";
     qDebug() << "finished";
 }
 
