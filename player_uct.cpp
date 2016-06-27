@@ -37,12 +37,12 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
         bool new_node_created = false;
         do
         {
-            if (graph_data.is_leaf(current_node))
+            if (graph_data.has_available_moves(current_node))
             {
                 BoardState state = graph_data.get_state(current_node);
 
-                const Move& move = graph_data.get_random_available_move(current_node, re);
-                std::tie(new_node_created, current_node) = graph_data.get_or_create_child(state, move); // non-const !!!
+                const Move& move = graph_data.pop_random_available_move(current_node);
+                std::tie(new_node_created, current_node) = graph_data.get_or_create_child(state, move, re); // non-const !!!
             }
             else
             {
@@ -82,7 +82,7 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
     int winner = state.getWinner();
     while ( winner < 0 )
     {
-        const auto& possible_moves = state.getPossibleMoves();
+        const Moves& possible_moves = state.getAvailableMoves();
         assert( possible_moves.size() != 0 );
         state.playMove(possible_moves[ re()%possible_moves.size() ]);
         winner = state.getWinner();
@@ -139,7 +139,7 @@ crunch_it_baby(GraphData& graph_data, RandomEngine& re, const HashedPair<BoardSt
         if (!graph_data.contains(hashed_state))
         {
             std::cout << "WARNING!!! unknown game state" << std::endl;
-            graph_data.get_or_create_node(hashed_state);
+            graph_data.get_or_create_node(hashed_state, re);
         }
 
         const GraphData::Node& root = graph_data.get_node(hashed_state);

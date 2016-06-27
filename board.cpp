@@ -114,6 +114,16 @@ BoardState::operator=(const BoardState& other)
     return *this;
 }
 
+Moves
+BoardState::getAvailableMoves() const
+{
+    const int nplayers = board.borders.size();
+    Moves moves;
+    for (Board::Graph::NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
+        if (states[ni] == nplayers) moves.push_back(ni);
+    return moves;
+}
+
 int
 BoardState::getWinner() const
 {
