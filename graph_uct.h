@@ -2,7 +2,7 @@
 
 #include "hashed.h"
 #include "board.h"
-#include <random>
+#include "utils.h"
 
 struct GraphData
 {
@@ -10,7 +10,6 @@ struct GraphData
 
     double uct_constant;
 
-    typedef std::default_random_engine Rng;
     typedef lemon::SmartDigraph Graph;
     typedef Graph::Node Node;
 
@@ -98,32 +97,32 @@ struct GraphData
      * node should be a valid **non leaf** node.
      * used during uct descent.
      * @param parent parent
-     * @param rng random number generator
+     * @param re random number generator
      * @return best child
      */
     Node
-    get_best_child(const Node& parent, Rng& rng) const;
+    get_best_child(const Node& parent, RandomEngine& re) const;
 
     /**
      * get maximum scoring move for **non leaf** node.
      * node should be a valid **non leaf** node.
      * used to choose best next move.
      * @param parent parent
-     * @param rng random number generator
+     * @param re random number generator
      * @return best move
      */
     Move
-    get_best_move(const Node& parent, Rng& rng) const;
+    get_best_move(const Node& parent, RandomEngine& re) const;
 
     /**
      * get random available move for **leaf** node.
      * node should be a valid **leaf** node.
      * @param node node
-     * @param rng random number generator
+     * @param re random number generator
      * @return move
      */
     Move
-    get_random_available_move(const Node& node, Rng& rng) const;
+    get_random_available_move(const Node& node, RandomEngine& re) const;
 
     typedef std::list<GraphData::Node> Nodes;
 

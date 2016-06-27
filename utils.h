@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <random>
+
+typedef std::mt19937 RandomEngine;
 
 double
 get_double_time();

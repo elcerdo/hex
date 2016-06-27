@@ -3,13 +3,13 @@
 #include "board.h"
 #include "player.h"
 #include "graph_uct.h"
-#include <random>
+#include "utils.h"
 
 struct PlayerUct : public Player
 {
-    std::default_random_engine re;
     GraphData graph_data;
     HashedPair<BoardState> hashed_state;
+    RandomEngine re;
 
     PlayerUct(const Board& board, const double uct_constant, const size_t seed);
     void update(const BoardState& state) override;
