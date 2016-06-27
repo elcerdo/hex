@@ -36,9 +36,16 @@ void
 Tile::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
     if (!interactive) return;
-    state++;
-    state %= 3;
-    update();
+
+    QGraphicsScene* scene_ = scene();
+    if (!scene_) return;
+    for (QGraphicsView* view : scene_->views())
+    {
+        Viewer* viewer = dynamic_cast<Viewer*>(view);
+        if (!viewer) continue;
+        viewer->notifyChange(*this);
+    }
+
     event->accept();
 }
 
@@ -61,15 +68,6 @@ Tile::update()
     }
 
     QGraphicsPolygonItem::update();
-
-    QGraphicsScene* scene_ = scene();
-    if (!scene_) return;
-    for (QGraphicsView* view : scene_->views())
-    {
-        Viewer* viewer = dynamic_cast<Viewer*>(view);
-        if (!viewer) continue;
-        viewer->notifyChange(*this);
-    }
 }
 
 QPointF
@@ -120,6 +118,7 @@ Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(false), board(b
 void
 Viewer::displayState(const BoardState* state)
 {
+    qDebug() << "display" << state;
     if (!state) return;
     for (QGraphicsItem* item : scene()->items())
     {
@@ -151,6 +150,7 @@ void
 Viewer::notifyChange(const Tile& tile)
 {
     if (requested_player < 0) return;
+    if (tile.getState() != 2) return;
     qDebug() << "notify" << requested_player;
     emit gotPlayerMove(requested_player, tile.getNode());
     requested_player = -1;

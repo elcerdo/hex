@@ -23,21 +23,27 @@ void
 GameLoop::run()
 {
     qDebug() << "init";
-    BoardState state(board);
 
     std::vector<Player*> players = {player0, player1};
+
+    BoardState state(board);
+    for (Player* player : players) player->update(state);
+    emit updateState(&state);
 
     int player_current = 0;
     while (!any_victory(state))
     {
         qDebug() << "loop for" << player_current;
+
+        const Move move = players[player_current]->getMove();
+        qDebug() << "playing move" << board.graph.valid(move);
+        state.playMove(move);
+
         for (Player* player : players) player->update(state);
         emit updateState(&state);
 
-        const Move move = players[player_current]->getMove();
-
         player_current++;
-        player_current %= 2;
+        player_current %= state.board.borders.size();
     }
 
     qDebug() << "finished";

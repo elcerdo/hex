@@ -35,6 +35,8 @@ struct SameStateMap
     Value operator[](const Key& key) const;
 };
 
+typedef Board::Node Move;
+
 struct BoardState
 {
     typedef Board::Graph::NodeMap<int> States;
@@ -42,10 +44,10 @@ struct BoardState
 
     const Board& board;
     States states;
+    int count;
 
     BoardState(const Board& board);
     Victories checkVictories() const;
+    void playMove(const Move& move);
 };
-
-typedef Board::Node Move;
 

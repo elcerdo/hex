@@ -17,7 +17,7 @@ PlayerQt::update(const BoardState& state)
 Move
 PlayerQt::getMove()
 {
-    qDebug() << "getMove qt player " << player;
+    qDebug() << "get move qt player" << player;
 
     answer_mutex.lock();
     emit requestPlayerMove(player);
@@ -26,9 +26,9 @@ PlayerQt::getMove()
     move = lemon::INVALID;
     answer_mutex.unlock();
 
-    qDebug() << "prout" << player;
+    qDebug() << "got move qt player" << player;
 
-    return move;
+    return move_copy;
 }
 
 void

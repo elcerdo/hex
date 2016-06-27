@@ -89,7 +89,7 @@ SameStateMap::operator[](const SameStateMap::Key& key) const
     return input_map[graph.u(key)] == input_map[graph.v(key)];
 }
 
-BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.borders.size())
+BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.borders.size()), count(0)
 {
     for (int player=0; player<board.borders.size(); player++)
     {
@@ -114,4 +114,13 @@ BoardState::checkVictories() const
     }
 
     return victories;
+}
+
+void
+BoardState::playMove(const Move& move)
+{
+    const int player = count % board.borders.size();
+    assert( states[move] == board.borders.size() );
+    states[move] = player;
+    count++;
 }
