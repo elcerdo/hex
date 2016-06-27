@@ -57,6 +57,14 @@ struct GraphData
     std::pair<bool, Node>
     get_or_create_node(const HashedPair<BoardState>& state);
 
+    /**
+     * get child node from state node after playing move.
+     * initial state should already be inserted in structure.
+     * update state!! if state comes from game, game should be updated too.
+     * @param state modified state
+     * @param move move to child
+     * @return node
+     */
     std::pair<bool, Node>
     get_or_create_child(BoardState& state, const Move& move);
 
