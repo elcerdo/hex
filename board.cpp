@@ -3,6 +3,7 @@
 #include <boost/unordered_map.hpp>
 #include <lemon/bfs.h>
 #include <lemon/adaptors.h>
+#include <lemon/maps.h>
 
 Board::Board(const int size) : size(size), graph(), coords(graph)
 {
@@ -87,6 +88,15 @@ SameStateMap::Value
 SameStateMap::operator[](const SameStateMap::Key& key) const
 {
     return input_map[graph.u(key)] == input_map[graph.v(key)];
+}
+
+BoardState&
+BoardState::operator=(const BoardState& other)
+{
+    assert( &board == &other.board );
+    count = other.count;
+    lemon::mapCopy(board.graph, other.states, states);
+    return *this;
 }
 
 BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.borders.size()), count(0)

@@ -47,6 +47,8 @@ struct BoardState
     int count;
 
     BoardState(const Board& board);
+    BoardState& operator=(const BoardState& other);
+
     Victories checkVictories() const;
     bool playMove(const Move& move);
 };

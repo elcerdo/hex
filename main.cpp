@@ -78,10 +78,12 @@ parse_options(int argc, char* argv[])
 
 #include "viewer.h"
 #include "player_qt.h"
+#include "player_random.h"
 #include "game.h"
 #include <QApplication>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <chrono>
 
 int main(int argc, char* argv[])
 {
@@ -103,10 +105,11 @@ int main(int argc, char* argv[])
 
     const std::function<Player*(const std::string&)> dispatch_player = [&viewer, &board](const std::string& name)
     {
-        if (name == "human") return new PlayerQt(board, viewer);
+        if (name == "human") return static_cast<Player*>(new PlayerQt(board, viewer));
+        if (name == "random") return static_cast<Player*>(new PlayerRandom(board, std::chrono::system_clock::now().time_since_epoch().count()));
         cerr << "bad player name '" << name << "'" << endl;
         std::exit(1);
-        return static_cast<PlayerQt*>(NULL);
+        return static_cast<Player*>(NULL);
     };
 
     Player *player0 = dispatch_player(options.player0_name);
