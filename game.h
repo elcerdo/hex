@@ -11,6 +11,7 @@ class GameLoop : public QThread
 
     signals:
         void updateState(const BoardState* state);
+        void statusChanged(const QString& message);
 
     protected:
         void run();

@@ -34,6 +34,7 @@ GameLoop::run()
     while (!any_victory(state))
     {
         qDebug() << "loop for" << player_current;
+        emit statusChanged(QString("requesting move for %1").arg(player_current == 0 ? "white" : "black"));
 
         const Move move = players[player_current]->getMove();
         qDebug() << "playing move" << board.graph.valid(move);
@@ -48,7 +49,8 @@ GameLoop::run()
 
     const auto victories = state.checkVictories();
     qDebug() << QVector<bool>::fromStdVector(victories);
-    qDebug() << ( victories[0] ? "white" : "black" ) << "wins!!";
+    emit statusChanged(QString("%1 wins!!").arg(victories[0] ? "white" : "black"));
+
     qDebug() << "finished";
 }
 
