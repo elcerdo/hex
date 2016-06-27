@@ -24,7 +24,7 @@ GameLoop::run()
     std::vector<Player*> players = {player0, player1};
 
     BoardState state(board);
-    qDebug() << "hash" << make_hashed_pair(state).hash;
+    qDebug() << "hash" << QString::number(make_hashed_pair(state).hash, 16);
     for (Player* player : players) player->update(state);
     emit updateState(&state);
 
@@ -47,7 +47,7 @@ GameLoop::run()
             break;
         }
 
-        qDebug() << "hash" << make_hashed_pair(state).hash;
+        qDebug() << "hash" << QString::number(make_hashed_pair(state).hash, 16);
         for (Player* player : players) player->update(state);
         emit updateState(&state);
 
