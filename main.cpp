@@ -24,6 +24,8 @@ hash_value(const A& a)
 */
 
 #include "viewer.h"
+#include "player_qt.h"
+#include "game.h"
 #include <iostream>
 #include <QApplication>
 
@@ -37,13 +39,17 @@ int main(int argc, char* argv[])
     Board board(4);
     cout << lemon::countNodes(board.graph) << "/" << lemon::countEdges(board.graph) << endl;
 
-    Viewer viewer(board);
-    viewer.resize(800, 600);
+    Viewer *viewer = new Viewer(board);
+    viewer->resize(800, 600);
 
-    BoardState state(board);
-    viewer.displayState(state);
+    PlayerQt *player0 = new PlayerQt(board, viewer);
+    PlayerQt *player1 = new PlayerQt(board, viewer);
+    GameLoop *game = new GameLoop(player0, player1, viewer);
 
-    viewer.show();
+    QObject::connect(game, SIGNAL(updateState(const BoardState*)), viewer, SLOT(displayState(const BoardState*)));
+
+    viewer->show();
+    game->start();
 
     return app.exec();
 }

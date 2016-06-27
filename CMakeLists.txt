@@ -19,12 +19,17 @@ include(${QT_USE_FILE})
 
 qt4_wrap_cpp(sources_moc_gui
     viewer.h
+    game.h
+    player_qt.h
     )
 
 add_executable(hex
     main.cpp
     board.cpp
     viewer.cpp
+    game.cpp
+    player.cpp
+    player_qt.cpp
     ${sources_moc_gui}
     )
 

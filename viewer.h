@@ -27,9 +27,11 @@ class Viewer : public QGraphicsView
     Q_OBJECT
     public:
         Viewer(const Board& board, QWidget* parent=NULL);
-        void displayState(const BoardState& state);
         void reconstructState(BoardState& state) const;
         void notifyChange(const Tile& tile);
+
+    public slots:
+        void displayState(const BoardState* state);
 
     protected:
         void keyPressEvent(QKeyEvent* event);

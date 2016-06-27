@@ -118,13 +118,14 @@ Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(false), board(b
 }
 
 void
-Viewer::displayState(const BoardState& state)
+Viewer::displayState(const BoardState* state)
 {
+		if (!state) return;
     for (QGraphicsItem* item : scene()->items())
     {
         Tile* tile = dynamic_cast<Tile*>(item);
         Q_ASSERT(tile);
-        tile->setState( state.states[tile->getNode()] );
+        tile->setState( state->states[tile->getNode()] );
     }
 }
 

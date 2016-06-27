@@ -47,3 +47,5 @@ struct BoardState
     Victories checkVictories() const;
 };
 
+typedef Board::Node Move;
+
