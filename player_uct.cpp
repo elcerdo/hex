@@ -37,7 +37,7 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
         bool new_node_created = false;
         do
         {
-            if (graph_data.has_available_moves(current_node))
+            if (graph_data.available_moves(current_node) > 0)
             {
                 BoardState state = graph_data.get_state(current_node);
 

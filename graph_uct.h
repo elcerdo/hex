@@ -32,13 +32,13 @@ struct GraphData
     contains(const HashedPair<BoardState>& hashed_state) const;
 
     /**
-     * check if node has available moves.
+     * count available moves.
      * a leaf is a node with children instantiated in every direction.
      * node should be a valid node.
-     * @return bool
+     * @return count
      */
-    bool
-    has_available_moves(const Node& node) const;
+    size_t
+    available_moves(const Node& node) const;
 
     /**
      * return node for state.

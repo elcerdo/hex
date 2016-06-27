@@ -74,11 +74,11 @@ GraphData::contains(const HashedPair<BoardState>& hashed_state) const
     return states_cache.find(hashed_state.hash) != states_cache.end();
 }
 
-bool
-GraphData::has_available_moves(const Node& node) const
+size_t
+GraphData::available_moves(const Node& node) const
 {
     assert( graph.valid(node) );
-    return !node_available_moves[node].empty();
+    return node_available_moves[node].size();
 }
 
 GraphData::Node
@@ -99,7 +99,7 @@ GraphData::create_node(const HashedPair<BoardState>& hashed_state, RandomEngine&
     nodes_cache.insert(std::make_pair(hashed_state.hash, node));
 
     UctData uct_data;
-    uct_data.parent_player = hashed_state.value.count+1 % 2;
+    uct_data.parent_player = (hashed_state.value.count+1) % 2;
     uct_data.parent_score = 0;
     uct_data.count = 0;
     node_uct_datas[node] = uct_data;
@@ -149,11 +149,13 @@ GraphData::get_or_create_child(BoardState& state, const Move& move, RandomEngine
 
     {  // already inserted
         OutArcIt oai(graph, root);
-        while (oai != lemon::INVALID && arc_moves[oai] != move)
-            ++oai;
-        assert( oai != lemon::INVALID );
-        assert( arc_moves[oai] == move );
-        return std::make_pair(false, graph.target(oai));
+        while (oai != lemon::INVALID && arc_moves[oai] != move) ++oai;
+        if (oai != lemon::INVALID )
+        {
+            assert( oai != lemon::INVALID );
+            assert( arc_moves[oai] == move );
+            return std::make_pair(false, graph.target(oai));
+        }
     }
 
     // create or get child and add create new arc
@@ -206,7 +208,7 @@ struct ScoreComputerNode
 GraphData::Node
 GraphData::get_best_child(const Node& parent, RandomEngine& re) const
 {
-    assert( !has_available_moves(parent) );
+    assert( available_moves(parent) == 0 );
 
     typedef std::vector<UctDataNodePair> ChildrenUctDatas;
     ChildrenUctDatas children_uct_datas;
@@ -250,7 +252,7 @@ struct ScoreComputerDirection
 Move
 GraphData::get_best_move(const Node& parent, RandomEngine& re) const
 {
-    assert( !has_available_moves(parent) );
+    assert( available_moves(parent) == 0 );
 
     typedef std::vector<UctDataArcPair> ChildrenUctDatas;
     ChildrenUctDatas children_uct_datas;
@@ -280,7 +282,7 @@ GraphData::get_best_move(const Node& parent, RandomEngine& re) const
 Move
 GraphData::pop_random_available_move(const Node& node)
 {
-    assert( has_available_moves(node) );
+    assert( available_moves(node) > 0 );
     Moves& moves = node_available_moves[node];
     const Move move = moves.back();
     moves.pop_back();
@@ -320,8 +322,9 @@ GraphData::print_from_root_internal(std::ostream& os, const Node& root, const st
     const BoardState& state = get_state(root);
 
     os << node_state_hashes[root];
-    os << " @" << ((root_uct_data.parent_player+1) % 2);
-    if (has_available_moves(root)) os << "A";
+    os << " p" << ((root_uct_data.parent_player+1) % 2);
+    const size_t available = available_moves(root);
+    if (available) os << " " << available;
     os << std::endl;
 
     if (max_depth==0) return;
