@@ -116,11 +116,13 @@ BoardState::checkVictories() const
     return victories;
 }
 
-void
+bool
 BoardState::playMove(const Move& move)
 {
     const int player = count % board.borders.size();
-    assert( states[move] == board.borders.size() );
+    if (!board.graph.valid(move)) return false;
+    if (states[move] != board.borders.size()) return false;
     states[move] = player;
     count++;
+    return true;
 }

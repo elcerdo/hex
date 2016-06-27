@@ -51,14 +51,19 @@ int main(int argc, char* argv[])
 
     QObject::connect(game, SIGNAL(updateState(const BoardState*)), viewer, SLOT(displayState(const BoardState*)));
 
-    QLabel* label = new QLabel();
+    QLabel* status = new QLabel();
 
-    QObject::connect(game, SIGNAL(statusChanged(const QString&)), label, SLOT(setText(const QString&)));
+    QObject::connect(game, SIGNAL(statusChanged(const QString&)), status, SLOT(setText(const QString&)));
+
+    QLabel* title = new QLabel();
+
+    title->setText(QString("%1 versus %2").arg(QString::fromStdString(player0->name)).arg(QString::fromStdString(player1->name)));
 
     {
         QVBoxLayout* layout = new QVBoxLayout();
+        layout->addWidget(title);
         layout->addWidget(viewer);
-        layout->addWidget(label);
+        layout->addWidget(status);
         main->setLayout(layout);
     }
 

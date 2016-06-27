@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-PlayerQt::PlayerQt(const Board& board, Viewer* viewer) : Player(board), QObject(viewer), answer_mutex(), answer_condition(), move(lemon::INVALID)
+PlayerQt::PlayerQt(const Board& board, Viewer* viewer) : Player(board, "human"), QObject(viewer), answer_mutex(), answer_condition(), move(lemon::INVALID)
 {
     connect(this, SIGNAL(requestPlayerMove(const int)), viewer, SLOT(requestPlayerMove(const int)));
     connect(viewer, SIGNAL(gotPlayerMove(const int, const Move&)), this, SLOT(gotPlayerMove(const int, const Move&)));
@@ -11,7 +11,7 @@ PlayerQt::PlayerQt(const Board& board, Viewer* viewer) : Player(board), QObject(
 void
 PlayerQt::update(const BoardState& state)
 {
-    qDebug() << "update qt player " << player;
+    qDebug() << "update qt player" << player;
 }
 
 Move

@@ -48,6 +48,6 @@ struct BoardState
 
     BoardState(const Board& board);
     Victories checkVictories() const;
-    void playMove(const Move& move);
+    bool playMove(const Move& move);
 };
 
