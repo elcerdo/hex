@@ -118,7 +118,7 @@ Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(false), board(b
 void
 Viewer::displayState(const BoardState* state)
 {
-    qDebug() << "display" << state;
+    qDebug() << "display";
     if (!state) return;
     for (QGraphicsItem* item : scene()->items())
     {
