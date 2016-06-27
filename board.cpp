@@ -114,11 +114,13 @@ BoardState::operator=(const BoardState& other)
     return *this;
 }
 
-bool
-BoardState::anyVictory() const
+int
+BoardState::getWinner() const
 {
     const Victories& victories = checkVictories();
-    return std::any_of(victories.begin(), victories.end(), [](const bool x) { return x; });
+    for (int player=0; player<victories.size(); player++)
+        if (victories[player]) return player;
+    return -1;
 }
 
 BoardState::Victories

@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
     {
         if (name == "human") return static_cast<Player*>(new PlayerQt(board, viewer));
         if (name == "random") return static_cast<Player*>(new PlayerRandom(board, std::chrono::system_clock::now().time_since_epoch().count()));
-        if (name == "uct") return static_cast<Player*>(new PlayerUct(board, .1, std::chrono::system_clock::now().time_since_epoch().count()));
+        //if (name == "uct") return static_cast<Player*>(new PlayerUct(board, .1, std::chrono::system_clock::now().time_since_epoch().count()));
         cerr << "bad player name '" << name << "'" << endl;
         std::exit(1);
         return static_cast<Player*>(NULL);

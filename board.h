@@ -50,7 +50,7 @@ struct BoardState
     BoardState(const BoardState& other);
     BoardState& operator=(const BoardState& other);
 
-    bool anyVictory() const;
+    int getWinner() const;
     std::vector<Move> getPossibleMoves() const;
     Victories checkVictories() const;
     bool playMove(const Move& move);

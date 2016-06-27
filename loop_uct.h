@@ -66,11 +66,13 @@ play_one_sequence(GraphData& graph_data, GraphData::Rng& re, const HashedPair<Bo
 #endif
 */
 
-    while ( !state.anyVictory() )
+    int winner = state.getWinner();
+    while ( winner < 0 )
     {
         const auto& possible_moves = state.getPossibleMoves();
         assert( possible_moves.size() != 0 );
         state.playMove(possible_moves[ re()%possible_moves.size() ]);
+        winner = state.getWinner();
     }
 
    /*
