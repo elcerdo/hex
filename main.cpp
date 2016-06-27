@@ -23,30 +23,94 @@ hash_value(const A& a)
 }
 */
 
+#include <iostream>
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/positional_options.hpp>
+#include <boost/program_options/variables_map.hpp>
+#include <boost/program_options/parsers.hpp>
+#include <boost/program_options/errors.hpp>
+
+struct Options
+{
+    int board_size;
+    std::string player0_name;
+    std::string player1_name;
+};
+
+Options
+parse_options(int argc, char* argv[])
+{
+    namespace po = boost::program_options;
+    using std::cout;
+    using std::cerr;
+    using std::endl;
+
+    Options options;
+    po::options_description po_options("dgtal_ambrosi [options]");
+    po_options.add_options()
+        ("help,h", "display this message")
+        ("size,s", po::value<int>(&options.board_size)->default_value(11))
+        ("white,w", po::value<std::string>(&options.player0_name)->default_value("human"))
+        ("black,b", po::value<std::string>(&options.player1_name)->default_value("human"));
+
+    try
+    {
+        po::variables_map vm;
+        po::store(po::command_line_parser(argc, argv).options(po_options).run(), vm);
+        po::notify(vm);
+
+        if (vm.count("help"))
+        {
+            cout << po_options;
+            std::exit(0);
+        }
+    }
+    catch (std::exception& ex)
+    {
+        cerr << ex.what() << endl;
+        cout << po_options;
+        std::exit(1);
+    }
+
+    return options;
+
+}
+
 #include "viewer.h"
 #include "player_qt.h"
 #include "game.h"
-#include <iostream>
 #include <QApplication>
 #include <QLabel>
 #include <QVBoxLayout>
 
-using std::cout;
-using std::endl;
-
 int main(int argc, char* argv[])
 {
+    using std::cout;
+    using std::cerr;
+    using std::endl;
+
+    const Options options = parse_options(argc, argv);
+
     QApplication app(argc, argv);
 
-    Board board(4);
-    cout << lemon::countNodes(board.graph) << "/" << lemon::countEdges(board.graph) << endl;
+    cout << "board_size " << options.board_size << endl;
+    Board board(options.board_size);
+    cout << "graph " << lemon::countNodes(board.graph) << "/" << lemon::countEdges(board.graph) << endl;
 
     QWidget* main = new QWidget();
 
     Viewer *viewer = new Viewer(board);
 
-    PlayerQt *player0 = new PlayerQt(board, viewer);
-    PlayerQt *player1 = new PlayerQt(board, viewer);
+    const std::function<Player*(const std::string&)> dispatch_player = [&viewer, &board](const std::string& name)
+    {
+        if (name == "human") return new PlayerQt(board, viewer);
+        cerr << "bad player name '" << name << "'" << endl;
+        std::exit(1);
+        return static_cast<PlayerQt*>(NULL);
+    };
+
+    Player *player0 = dispatch_player(options.player0_name);
+    Player *player1 = dispatch_player(options.player1_name);
     GameLoop *game = new GameLoop(player0, player1, viewer);
 
     QObject::connect(game, SIGNAL(updateState(const BoardState*)), viewer, SLOT(displayState(const BoardState*)));

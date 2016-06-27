@@ -11,13 +11,13 @@ PlayerQt::PlayerQt(const Board& board, Viewer* viewer) : Player(board, "human"),
 void
 PlayerQt::update(const BoardState& state)
 {
-    qDebug() << "update qt player" << player;
+    qDebug() << "update player_qt" << player;
 }
 
 Move
 PlayerQt::getMove()
 {
-    qDebug() << "get move qt player" << player;
+    qDebug() << "get move player_qt" << player;
 
     answer_mutex.lock();
     emit requestPlayerMove(player);
@@ -26,7 +26,7 @@ PlayerQt::getMove()
     move = lemon::INVALID;
     answer_mutex.unlock();
 
-    qDebug() << "got move qt player" << player;
+    qDebug() << "got move player_qt" << player;
 
     return move_copy;
 }
