@@ -36,6 +36,7 @@ struct SameStateMap
 };
 
 typedef Board::Node Move;
+typedef std::vector<Move> Moves;
 
 struct BoardState
 {
@@ -51,7 +52,7 @@ struct BoardState
     BoardState& operator=(const BoardState& other);
 
     int getWinner() const;
-    std::vector<Move> getPossibleMoves() const;
+    Moves getAvailableMoves() const;
     Victories checkVictories() const;
     bool playMove(const Move& move);
 };

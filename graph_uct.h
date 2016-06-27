@@ -3,6 +3,7 @@
 #include "hashed.h"
 #include "board.h"
 #include "utils.h"
+#include <boost/unordered_map.hpp>
 
 struct GraphData
 {
@@ -12,6 +13,7 @@ struct GraphData
 
     typedef lemon::SmartDigraph Graph;
     typedef Graph::Node Node;
+    typedef Graph::Arc Arc;
 
     /**
      * drops data that is not accessible from node.
@@ -30,13 +32,13 @@ struct GraphData
     contains(const HashedPair<BoardState>& hashed_state) const;
 
     /**
-     * check if node is a leaf or not.
+     * check if node has available moves.
      * a leaf is a node with children instantiated in every direction.
      * node should be a valid node.
      * @return bool
      */
     bool
-    is_leaf(const Node& node) const;
+    has_available_moves(const Node& node) const;
 
     /**
      * return node for state.
@@ -54,7 +56,7 @@ struct GraphData
      * @return node
      */
     std::pair<bool, Node>
-    get_or_create_node(const HashedPair<BoardState>& state);
+    get_or_create_node(const HashedPair<BoardState>& state, RandomEngine& re);
 
     /**
      * get child node from state node after playing move.
@@ -65,7 +67,7 @@ struct GraphData
      * @return node
      */
     std::pair<bool, Node>
-    get_or_create_child(BoardState& state, const Move& move);
+    get_or_create_child(BoardState& state, const Move& move, RandomEngine& re);
 
     /**
      * get state for node.
@@ -78,8 +80,8 @@ struct GraphData
 
     struct UctData
     {
-        int parent_hero_int;
-        double score_for_parent;
+        int parent_player;
+        int parent_score;
         int count;
     };
 
@@ -115,14 +117,13 @@ struct GraphData
     get_best_move(const Node& parent, RandomEngine& re) const;
 
     /**
-     * get random available move for **leaf** node.
+     * pop random available move for **leaf** node.
      * node should be a valid **leaf** node.
      * @param node node
-     * @param re random number generator
      * @return move
      */
     Move
-    get_random_available_move(const Node& node, RandomEngine& re) const;
+    pop_random_available_move(const Node& node);
 
     typedef std::list<GraphData::Node> Nodes;
 
@@ -147,13 +148,6 @@ struct GraphData
     print_from_root(std::ostream& os, const Node& root, const std::string& indent = "", const int& max_depth=-1) const;
 
     /**
-     * save graph structure as a dot file.
-     * @param filename file name
-     */
-    void
-    save_dot_file(const std::string& filename) const;
-
-    /**
      * fill structure sizes.
      * @param node_count node count
      * @param arc_count arc count
@@ -172,53 +166,40 @@ struct GraphData
     std::ostream&
     operator<<(std::ostream& os, const GraphData& graph_data);
 
-    /**
-     * merge both graph to have the same representation
-     * @param graph_data_a first graph data
-     * @param graph_data_b second graph data
-     */
-    friend
-    void
-    merge_graph_data(GraphData& graph_data_a, GraphData& graph_data_b);
-
     typedef std::pair<UctData, Node> UctDataNodePair;
-    //typedef std::pair<UctData, int> UctDataDirectionIntPair;
+    typedef std::pair<UctData, Arc> UctDataArcPair;
 
 private:
 
     typedef Graph::NodeIt NodeIt;
-    typedef Graph::Arc Arc;
     typedef Graph::ArcIt ArcIt;
     typedef Graph::OutArcIt OutArcIt;
 
-    //typedef boost::array<bool, 5> ArcConstructedFlags;
-
     typedef Graph::NodeMap<UctData> NodeUctDatas;
     typedef Graph::NodeMap<Hash> NodeStateHashes;
-    //typedef Graph::NodeMap<ArcConstructedFlags> NodeArcConstructedFlags;
-    //typedef Graph::ArcMap<int> ArcDirectionInts;
+    typedef Graph::NodeMap<Moves> NodeAvailableMoves;
+    typedef Graph::ArcMap<Move> ArcMoves;
 
-    //typedef std::map<Hash, const State> StatesCache;
-    //typedef std::map<Hash, const Node> NodesCache;
+    typedef boost::unordered_map<Hash, const BoardState> StatesCache;
+    typedef boost::unordered_map<Hash, const Node> NodesCache;
 
     Graph graph;
 
     NodeUctDatas node_uct_datas;
     NodeStateHashes node_state_hashes;
-    //NodeArcConstructedFlags node_arc_constructed_flags;
-    //ArcDirectionInts arc_direction_ints;
+    NodeAvailableMoves node_available_moves;
+    ArcMoves arc_moves;
 
-    //StatesCache states_cache;
-    //NodesCache nodes_cache;
+    StatesCache states_cache;
+    NodesCache nodes_cache;
 
     Arc
     create_arc(const Node& from_node, const Node& to_node, const Move& move);
 
     Node
-    create_node(const HashedPair<BoardState>& hashed_state);
+    create_node(const HashedPair<BoardState>& hashed_state, RandomEngine& re);
 
     void
     print_from_root_internal(std::ostream& os, const Node& node, const std::string& indent, const int& max_depth) const;
-
 };
 

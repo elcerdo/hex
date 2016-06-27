@@ -32,6 +32,7 @@ add_executable(hex
     player.cpp
     player_qt.cpp
     player_random.cpp
+    graph_uct.cpp
     player_uct.cpp
     ${sources_moc_gui}
     )
