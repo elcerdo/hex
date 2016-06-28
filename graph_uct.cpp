@@ -74,6 +74,12 @@ GraphData::contains(const HashedPair<BoardState>& hashed_state) const
     return states_cache.find(hashed_state.hash) != states_cache.end();
 }
 
+bool
+GraphData::valid(const Node& node) const
+{
+    return graph.valid(node);
+}
+
 size_t
 GraphData::available_moves(const Node& node) const
 {
@@ -202,6 +208,11 @@ GraphData::get_best_child(const Node& parent, RandomEngine& re) const
         total += child_uct_data.count;
         children_uct_datas.push_back(std::make_pair(child_uct_data, child));
     }
+
+    if (children_uct_datas.empty())
+        return lemon::INVALID;
+
+    assert( !children_uct_datas.empty() );
     assert( total >= node_uct_datas[parent].count - 1 );
     std::random_shuffle(children_uct_datas.begin(), children_uct_datas.end(), [&re](const size_t size) { return re()%size; });
 

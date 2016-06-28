@@ -24,9 +24,10 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
             }
             else
             {
-                current_node = graph_data.get_best_child(current_node, re);
+                const GraphData::Node next_node = graph_data.get_best_child(current_node, re);
+                if (!graph_data.valid(next_node)) break;
+                current_node = next_node;
             }
-
             nodes.push_back(current_node);
         } while (!new_node_created);
     }
@@ -44,6 +45,7 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
         assert( valid );
         winner = state.getWinner();
     }
+    assert( state.getWinner() >= 0 );
 
     // propagate mc value backward
     graph_data.back_propagate_winner(nodes, state);

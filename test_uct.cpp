@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
     cout << endl << endl;
 
     { // check play_one_sequence
-        GraphData graph_data(.1);
+        GraphData graph_data(.5);
         const GraphData::Node root = graph_data.get_or_create_node(state, re).second;
         cout << graph_data << endl;
         graph_data.print_from_root(cout, root);
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
         cout << "-----------" << endl;
 
         {
-            const int kk_max = 200;
+            const int kk_max = 2000;
 
             const double time_start = get_double_time();
             for (int kk=0; kk<kk_max; kk++)

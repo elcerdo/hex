@@ -106,6 +106,14 @@ struct GraphData
     get_best_child(const Node& parent, RandomEngine& re) const;
 
     /**
+     * check is node is valid
+     * @param node checked node
+     * @return node is valid
+     */
+    bool
+    valid(const Node& node) const;
+
+    /**
      * get maximum scoring move for **non leaf** node.
      * node should be a valid **non leaf** node.
      * used to choose best next move.

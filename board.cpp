@@ -124,6 +124,8 @@ BoardState::operator=(const BoardState& other)
 Moves
 BoardState::getAvailableMoves() const
 {
+    if (getWinner() >= 0) return Moves();
+
     const int nplayers = board.borders.size();
     Moves moves;
     for (Board::Graph::NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
