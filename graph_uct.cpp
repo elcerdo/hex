@@ -224,7 +224,7 @@ GraphData::get_best_child(const Node& parent, RandomEngine& re) const
         [&score](const UctDataNodePair& aa, const UctDataNodePair& bb) { return score(aa.first) < score(bb.first); })->second;
 }
 
-Move
+std::pair<Move, GraphData::UctData>
 GraphData::get_best_move(const Node& parent, RandomEngine& re) const
 {
     assert( available_moves(parent) == 0 );
@@ -249,8 +249,10 @@ GraphData::get_best_move(const Node& parent, RandomEngine& re) const
     const std::function<double(const UctData&)> score = [](const UctData& data)
         { return static_cast<double>(data.parent_score)/data.count; };
 
-    return arc_moves[std::max_element(children_uct_datas.begin(), children_uct_datas.end(),
-        [&score](const UctDataArcPair& aa, const UctDataArcPair& bb) { return score(aa.first) < score(bb.first); })->second];
+    const ChildrenUctDatas::const_iterator& best_pair = std::max_element(children_uct_datas.begin(), children_uct_datas.end(),
+        [&score](const UctDataArcPair& aa, const UctDataArcPair& bb) { return score(aa.first) < score(bb.first); });
+
+    return std::make_pair(arc_moves[best_pair->second], best_pair->first);
 }
 
 Move

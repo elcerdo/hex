@@ -121,7 +121,7 @@ struct GraphData
      * @param re random number generator
      * @return best move
      */
-    Move
+    std::pair<Move, UctData>
     get_best_move(const Node& parent, RandomEngine& re) const;
 
     /**
