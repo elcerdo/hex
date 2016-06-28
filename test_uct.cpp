@@ -153,7 +153,8 @@ int main(int argc, char* argv[])
         cout << graph_data << endl;
         graph_data.print_from_root(cout, root, "", 1);
 
-        cout << "best move is " << move_coord(board, graph_data.get_best_move(root, re)) << endl;
+        const std::pair<Move, GraphData::UctData> best_move = graph_data.get_best_move(root, re);
+        cout << "best move is " << move_coord(board, best_move.first) << endl;
     }
 
     return 0;
