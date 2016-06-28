@@ -38,6 +38,14 @@ operator<<(std::ostream& os, const HashedPair<BoardState>& hashed_state)
     return os;
 }
 
+void
+fatal_error(const bool& assert_value, const std::string& message)
+{
+    if (assert_value) return;
+    std::cerr << "FATAL ERROR " << message << std::endl;
+    std::exit(42);
+}
+
 using std::endl;
 using std::cout;
 
@@ -49,11 +57,49 @@ int main(int argc, char* argv[])
     Board board(3);
     BoardState state(board);
     cout << state << endl;
+
     { // check copy state
         const BoardState state_assign = state;
         const BoardState state_copy(state);
-        assert( make_hashed_pair(state) == make_hashed_pair(state_assign) );
-        assert( make_hashed_pair(state) == make_hashed_pair(state_copy) );
+        fatal_error( hash_value(state) == hash_value(state_assign), "assign operator hash mismatch" );
+        fatal_error( hash_value(state) == hash_value(state_copy), "copy constructor hash mismatch" );
+    }
+
+    { // check associativity
+        Moves available_moves = state.getAvailableMoves();
+        assert( available_moves.size() >= 4 );
+        for (int kk=0; kk<10; kk++)
+        {
+            std::random_shuffle(available_moves.begin(), available_moves.end(), [&re](const size_t size) { return re()%size; });
+
+            BoardState state_aa = state;
+            state_aa.playMove(available_moves[0]);
+            state_aa.playMove(available_moves[1]);
+            state_aa.playMove(available_moves[2]);
+            state_aa.playMove(available_moves[3]);
+
+            BoardState state_bb = state;
+            state_bb.playMove(available_moves[2]);
+            state_bb.playMove(available_moves[1]);
+            state_bb.playMove(available_moves[0]);
+            state_bb.playMove(available_moves[3]);
+
+            BoardState state_cc = state;
+            state_cc.playMove(available_moves[0]);
+            state_cc.playMove(available_moves[3]);
+            state_cc.playMove(available_moves[2]);
+            state_cc.playMove(available_moves[1]);
+
+            BoardState state_dd = state;
+            state_dd.playMove(available_moves[2]);
+            state_dd.playMove(available_moves[3]);
+            state_dd.playMove(available_moves[0]);
+            state_dd.playMove(available_moves[1]);
+
+            fatal_error( hash_value(state_aa) == hash_value(state_bb), "associativity mismatch" );
+            fatal_error( hash_value(state_aa) == hash_value(state_cc), "associativity mismatch" );
+            fatal_error( hash_value(state_aa) == hash_value(state_dd), "associativity mismatch" );
+        }
     }
 
     GraphData graph_data(.1);
