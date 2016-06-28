@@ -34,62 +34,19 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
     // get state from cache
     BoardState state = graph_data.get_state(current_node);
 
-    /*
-#if defined(VERBOSEMC)
-    std::cout << graph_data << std::endl;
-    std::cout << "down " << nodes.size() << " nodes to " << state << std::endl;
-#endif
-
-#if defined(TIMING)
-    const double& time_end_descent = get_double_time();
-    accum_descent += time_end_descent-time_start_descent;
-#endif
-*/
-
     // play random until end of game
-    /*
-#if defined(VERBOSEMC)
-    std::cout << "mc til the end" << std::endl;
-#endif
-
-#if defined(TIMING)
-    const double& time_start_mc = get_double_time();
-#endif
-*/
-
     int winner = state.getWinner();
     while ( winner < 0 )
     {
         const Moves& possible_moves = state.getAvailableMoves();
         assert( possible_moves.size() != 0 );
-        state.playMove(possible_moves[ re()%possible_moves.size() ]);
+        const bool valid = state.playMove(possible_moves[ re()%possible_moves.size() ]);
+        assert( valid );
         winner = state.getWinner();
     }
 
-   /*
-#if defined(TIMING)
-    const double& time_end_mc = get_double_time();
-    accum_mc += time_end_mc-time_start_mc;
-#endif
-
     // propagate mc value backward
-#if defined(VERBOSEMC)
-    std::cout << graph_data << std::endl;
-    std::cout << "backpropagate mc result" << std::endl;
-#endif
-
-#if defined(TIMING)
-    const double& time_start_update = get_double_time();
-#endif
-*/
-
     graph_data.back_propagate_winner(nodes, state);
-/*
-#if defined(TIMING)
-    const double& time_end_update = get_double_time();
-    accum_update += time_end_update-time_start_update;
-#endif
-*/
 }
 
 void
