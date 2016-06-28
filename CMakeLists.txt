@@ -57,3 +57,19 @@ add_executable(test_uct
 target_link_libraries(test_uct
     ${LEMON_LIBRARIES}
     )
+
+add_executable(stress_uct
+    utils.cpp
+    board.cpp
+    game.cpp
+    graph_uct.cpp
+    loop_uct.cpp
+    player.cpp
+    player_uct.cpp
+    stress_uct.cpp
+    )
+
+target_link_libraries(stress_uct
+    ${LEMON_LIBRARIES}
+    )
+
