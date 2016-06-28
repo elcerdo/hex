@@ -49,8 +49,13 @@ Board::Board(const int size) : size(size), graph(), coords(graph)
             graph.addEdge(nodes.find(coord_aa)->second, nodes.find(coord_bb)->second);
         }
 
+    const int playable_size = nodes.size();
+    assert( playable_size == graph.maxNodeId()+1 );
+
     {
         const Border border = std::make_pair(graph.addNode(), graph.addNode());
+        assert( graph.id(border.first) >= playable_size );
+        assert( graph.id(border.second) >= playable_size );
         coords[border.first] = std::make_pair(size/2, -2);
         coords[border.second] = std::make_pair(size/2, size+1);
         borders.push_back(border);
@@ -66,6 +71,8 @@ Board::Board(const int size) : size(size), graph(), coords(graph)
 
     {
         const Border border = std::make_pair(graph.addNode(), graph.addNode());
+        assert( graph.id(border.first) >= playable_size );
+        assert( graph.id(border.second) >= playable_size );
         coords[border.first] = std::make_pair(-2, size/2);
         coords[border.second] = std::make_pair(size+1, size/2);
         borders.push_back(border);
