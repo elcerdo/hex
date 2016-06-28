@@ -9,20 +9,8 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
     GraphData::Nodes nodes;
 
     // go down till hitting the bottom of the tree
-
-    /*
-#if defined(VERBOSEMC)
-    std::cout << graph_data << std::endl;
-    std::cout << "going down" << std::endl;
-#endif
-*/
-
-    const GraphData::Node& start_node = graph_data.get_node(hashed_state_start);
-
-    GraphData::Node current_node = start_node;
-
+    GraphData::Node current_node = graph_data.get_node(hashed_state_start);
     nodes.push_back(current_node);
-
     {
         bool new_node_created = false;
         do

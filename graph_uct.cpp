@@ -183,33 +183,12 @@ GraphData::get_uct_data(const Node& node) const
     return node_uct_datas[node];
 }
 
-struct ScoreComputerNode
-{
-    ScoreComputerNode(const double& uct_constant, const int& total) :
-        factor(uct_constant*sqrt(2*log(total)))
-    {
-    }
-
-    bool
-    operator()(const GraphData::UctDataNodePair& pair_aa, const GraphData::UctDataNodePair& pair_bb) const
-    {
-        if (pair_aa.first.count == 0) return false;
-        if (pair_bb.first.count == 0) return true;
-
-        const double& score_aa = factor/sqrt(pair_aa.first.count) + pair_aa.first.parent_score/pair_aa.first.count;
-        const double& score_bb = factor/sqrt(pair_bb.first.count) + pair_bb.first.parent_score/pair_bb.first.count;
-
-        return score_aa < score_bb;
-    }
-
-    const double factor;
-};
-
 GraphData::Node
 GraphData::get_best_child(const Node& parent, RandomEngine& re) const
 {
     assert( available_moves(parent) == 0 );
 
+    typedef std::pair<UctData, Node> UctDataNodePair;
     typedef std::vector<UctDataNodePair> ChildrenUctDatas;
     ChildrenUctDatas children_uct_datas;
     int total = 0;
@@ -219,19 +198,20 @@ GraphData::get_best_child(const Node& parent, RandomEngine& re) const
         const GraphData::Node& child = graph.target(oai);
         const GraphData::UctData& child_uct_data = node_uct_datas[child];
 
+        assert( child_uct_data.count > 0 );
         total += child_uct_data.count;
         children_uct_datas.push_back(std::make_pair(child_uct_data, child));
     }
-
-    //std::cout << "max scoring child count check " <<
-    //std::cout << std::hex << node_state_hashes[parent] << std::dec << " ";
-    //std::cout << total << " " << node_uct_datas[parent].count << std::endl;
     assert( total >= node_uct_datas[parent].count - 1 );
-
     std::random_shuffle(children_uct_datas.begin(), children_uct_datas.end(), [&re](const size_t size) { return re()%size; });
-    const UctDataNodePair& max_pair = *std::max_element(children_uct_datas.begin(), children_uct_datas.end(), ScoreComputerNode(uct_constant, total));
 
-    return max_pair.second;
+    const double factor = uct_constant*sqrt(2*log(total));
+
+    const std::function<double(const UctData&)> score = [&factor](const UctData& data)
+        { return factor/sqrt(data.count) + static_cast<double>(data.parent_score)/data.count; };
+
+    return std::max_element(children_uct_datas.begin(), children_uct_datas.end(),
+        [&score](const UctDataNodePair& aa, const UctDataNodePair& bb) { return score(aa.first) < score(bb.first); })->second;
 }
 
 struct ScoreComputerDirection
@@ -323,8 +303,7 @@ GraphData::print_from_root_internal(std::ostream& os, const Node& root, const st
 
     os << node_state_hashes[root];
     os << " p" << ((root_uct_data.parent_player+1) % 2);
-    const size_t available = available_moves(root);
-    if (available) os << " " << available;
+    os << " " << available_moves(root);
     os << std::endl;
 
     if (max_depth==0) return;
@@ -340,7 +319,7 @@ GraphData::print_from_root_internal(std::ostream& os, const Node& root, const st
 
         const UctData& child_uct_data = node_uct_datas[graph.target(oai)];
         assert( (root_uct_data.parent_player+1) % 2 == child_uct_data.parent_player );
-        const double& proba = 100*child_uct_data.parent_score/child_uct_data.count;
+        const double& proba = 100*static_cast<double>(child_uct_data.parent_score)/child_uct_data.count;
 
         std::stringstream new_indent_first_stream;
         new_indent_first_stream << std::fixed << std::setprecision(0) << indent;
@@ -378,7 +357,7 @@ operator<<(std::ostream& os, const GraphData& graph_data)
     os << "<GraphData";
     os << " c=" << graph_data.uct_constant;
     os << " n=" << node_count << "/" << graph_data.states_cache.size();
-    os << " e=" << arc_count << "/" << graph_data.nodes_cache.size();
+    os << " e=" << arc_count;
     os << " pe=" << arc_count-node_count+1;
 #if !defined(NDEBUG)
     if (!lemon::parallelFree(graph_data.graph)) os << " PARALLEL";

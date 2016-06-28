@@ -1,6 +1,6 @@
 #include "board.h"
 #include "graph_uct.h"
-#include "player_uct.h"
+#include "loop_uct.h"
 #include <iostream>
 
 struct move_coord
@@ -53,6 +53,7 @@ int main(int argc, char* argv[])
 {
     RandomEngine re(1234567890);
     cout << std::hex << re() << " " << re() << " " << re() << std::dec << std::endl;
+    cout << endl << endl;
 
     Board board(3);
     BoardState state(board);
@@ -66,9 +67,11 @@ int main(int argc, char* argv[])
     }
 
     { // check associativity
+        const double time_start = get_double_time();
+
         Moves available_moves = state.getAvailableMoves();
         assert( available_moves.size() >= 4 );
-        for (int kk=0; kk<10; kk++)
+        for (int kk=0; kk<1000; kk++)
         {
             std::random_shuffle(available_moves.begin(), available_moves.end(), [&re](const size_t size) { return re()%size; });
 
@@ -100,13 +103,44 @@ int main(int argc, char* argv[])
             fatal_error( hash_value(state_aa) == hash_value(state_cc), "associativity mismatch" );
             fatal_error( hash_value(state_aa) == hash_value(state_dd), "associativity mismatch" );
         }
+
+        const double time_end = get_double_time();
+        cout << "associativity tests took " << clock_it(time_end-time_start) << endl;
     }
+    cout << endl << endl;
 
-    GraphData graph_data(.1);
+    { // check play_one_sequence
+        GraphData graph_data(.1);
+        const GraphData::Node root = graph_data.get_or_create_node(state, re).second;
+        cout << graph_data << endl;
+        graph_data.print_from_root(cout, root);
 
-    const GraphData::Node root = graph_data.get_or_create_node(state, re).second;
-    cout << graph_data << endl;
-    graph_data.print_from_root(cout, root);
+        for (int kk=0; kk<10; kk++)
+        {
+            cout << "-----------" << endl;
+            play_one_sequence(graph_data, re, state);
+            cout << graph_data << endl;
+            graph_data.print_from_root(cout, root);
+        }
+        cout << "-----------" << endl;
+
+        {
+            const int kk_max = 200;
+
+            const double time_start = get_double_time();
+            for (int kk=0; kk<kk_max; kk++)
+                play_one_sequence(graph_data, re, state);
+            const double time_end = get_double_time();
+
+            const double game_per_second = kk_max/(time_end-time_start);
+            cout << "computed " << kk_max << " games in " << clock_it(time_end-time_start) << " (" << game_per_second << "games/s)" << endl;
+
+        }
+
+        cout << "-----------" << endl;
+        cout << graph_data << endl;
+        graph_data.print_from_root(cout, root,"" ,1);
+    }
 
     return 0;
 }
