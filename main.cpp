@@ -10,6 +10,8 @@ struct Options
     int board_size;
     std::string player0_name;
     std::string player1_name;
+    double uct_constant;
+    double uct_time;
 };
 
 Options
@@ -26,7 +28,9 @@ parse_options(int argc, char* argv[])
         ("help,h", "display this message")
         ("size,s", po::value<int>(&options.board_size)->default_value(11))
         ("white,w", po::value<std::string>(&options.player0_name)->default_value("human"))
-        ("black,b", po::value<std::string>(&options.player1_name)->default_value("human"));
+        ("black,b", po::value<std::string>(&options.player1_name)->default_value("human"))
+        ("uct-constant,c", po::value<double>(&options.uct_constant)->default_value(.5))
+        ("uct-time,t", po::value<double>(&options.uct_time)->default_value(3));
 
     try
     {
@@ -79,11 +83,11 @@ int main(int argc, char* argv[])
 
     Viewer *viewer = new Viewer(board);
 
-    const std::function<Player*(const std::string&)> dispatch_player = [&viewer, &board](const std::string& name)
+    const std::function<Player*(const std::string&)> dispatch_player = [&options, &viewer, &board](const std::string& name)
     {
         if (name == "human") return static_cast<Player*>(new PlayerQt(board, viewer));
         if (name == "random") return static_cast<Player*>(new PlayerRandom(board, std::chrono::system_clock::now().time_since_epoch().count()));
-        if (name == "uct") return static_cast<Player*>(new PlayerUct(board, .1, std::chrono::system_clock::now().time_since_epoch().count()));
+        if (name == "uct") return static_cast<Player*>(new PlayerUct(board, options.uct_constant, options.uct_time, std::chrono::system_clock::now().time_since_epoch().count()));
         cerr << "bad player name '" << name << "'" << endl;
         std::exit(1);
         return static_cast<Player*>(NULL);

@@ -174,7 +174,6 @@ struct GraphData
     std::ostream&
     operator<<(std::ostream& os, const GraphData& graph_data);
 
-private:
 
     typedef Graph::NodeIt NodeIt;
     typedef Graph::ArcIt ArcIt;
