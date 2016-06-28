@@ -22,10 +22,10 @@ std::ostream&
 operator<<(std::ostream& os, const HashedPair<BoardState>& hashed_state)
 {
     using std::endl;
-    os << "<BoardState " << std::hex << hashed_state.hash << std::dec << " " << hashed_state.value.getWinner() << " ";
+    os << "<BoardState h=" << std::hex << hashed_state.hash << std::dec << " w=" << hashed_state.value.getWinner() << " ";
 
     bool first = true;
-    os << "[";
+    os << "a=[";
     for (const Move& move : hashed_state.value.getAvailableMoves())
     {
         if (!first) os << ",";
@@ -49,6 +49,18 @@ int main(int argc, char* argv[])
     Board board(3);
     BoardState state(board);
     cout << state << endl;
+    { // check copy state
+        const BoardState state_assign = state;
+        const BoardState state_copy(state);
+        assert( make_hashed_pair(state) == make_hashed_pair(state_assign) );
+        assert( make_hashed_pair(state) == make_hashed_pair(state_copy) );
+    }
+
+    GraphData graph_data(.1);
+
+    const GraphData::Node root = graph_data.get_or_create_node(state, re).second;
+    cout << graph_data << endl;
+    graph_data.print_from_root(cout, root);
 
     return 0;
 }

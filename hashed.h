@@ -13,7 +13,7 @@ struct HashedPair
     {
     }
 
-    const Hash& hash;
+    const Hash hash;
     const Value& value;
 };
 

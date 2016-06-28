@@ -373,19 +373,23 @@ std::ostream&
 operator<<(std::ostream& os, const GraphData& graph_data)
 {
     const size_t& node_count = lemon::countNodes(graph_data.graph);
-    assert( node_count == graph_data.states_cache.size() );
-    assert( node_count == graph_data.nodes_cache.size() );
     const size_t& arc_count = lemon::countArcs(graph_data.graph);
 
     os << "<GraphData";
-    os << " n=" << node_count;
-    os << " e=" << arc_count;
+    os << " c=" << graph_data.uct_constant;
+    os << " n=" << node_count << "/" << graph_data.states_cache.size();
+    os << " e=" << arc_count << "/" << graph_data.nodes_cache.size();
     os << " pe=" << arc_count-node_count+1;
 #if !defined(NDEBUG)
+    if (!lemon::parallelFree(graph_data.graph)) os << " PARALLEL";
     if (lemon::dag(graph_data.graph)) os << " DAG";
     if (lemon::tree(lemon::undirector(graph_data.graph))) os << " TREE";
 #endif
     os << ">";
+
+    assert( node_count == graph_data.states_cache.size() );
+    assert( node_count == graph_data.nodes_cache.size() );
+
     return os;
 }
 
