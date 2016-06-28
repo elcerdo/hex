@@ -139,7 +139,21 @@ int main(int argc, char* argv[])
 
         cout << "-----------" << endl;
         cout << graph_data << endl;
-        graph_data.print_from_root(cout, root,"" ,1);
+        graph_data.print_from_root(cout, root, "", 1);
+    }
+    cout << endl << endl;
+
+    { // test crunch_it_baby
+        GraphData graph_data(.5);
+        const GraphData::Node root = graph_data.get_or_create_node(state, re).second;
+        cout << graph_data << endl;
+
+        crunch_it_baby(graph_data, re, state, 3);
+
+        cout << graph_data << endl;
+        graph_data.print_from_root(cout, root, "", 1);
+
+        cout << "best move is " << move_coord(board, graph_data.get_best_move(root, re)) << endl;
     }
 
     return 0;
