@@ -1,4 +1,4 @@
-#include "game.h"
+#include "game_qt.h"
 
 #include <QDebug>
 #include "hashed.h"

@@ -59,7 +59,7 @@ parse_options(int argc, char* argv[])
 #include "player_qt.h"
 #include "player_random.h"
 #include "player_uct.h"
-#include "game.h"
+#include "game_qt.h"
 #include <QApplication>
 #include <QLabel>
 #include <QVBoxLayout>
