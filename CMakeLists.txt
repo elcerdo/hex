@@ -33,6 +33,7 @@ add_executable(hex
     player_qt.cpp
     player_random.cpp
     graph_uct.cpp
+    loop_uct.cpp
     player_uct.cpp
     ${sources_moc_gui}
     )
@@ -44,3 +45,14 @@ target_link_libraries(hex
     QtCore QtGui
     )
 
+add_executable(test_uct
+    utils.cpp
+    test_uct.cpp
+    board.cpp
+    graph_uct.cpp
+    loop_uct.cpp
+    )
+
+target_link_libraries(test_uct
+    ${LEMON_LIBRARIES}
+    )
