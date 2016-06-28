@@ -217,7 +217,6 @@ GraphData::get_best_child(const Node& parent, RandomEngine& re) const
     std::random_shuffle(children_uct_datas.begin(), children_uct_datas.end(), [&re](const size_t size) { return re()%size; });
 
     const double factor = uct_constant*sqrt(2*log(total));
-
     const std::function<double(const UctData&)> score = [&factor](const UctData& data)
         { return factor/sqrt(data.count) + static_cast<double>(data.parent_score)/data.count; };
 
@@ -225,49 +224,33 @@ GraphData::get_best_child(const Node& parent, RandomEngine& re) const
         [&score](const UctDataNodePair& aa, const UctDataNodePair& bb) { return score(aa.first) < score(bb.first); })->second;
 }
 
-struct ScoreComputerDirection
-{
-    bool
-    operator()(const GraphData::UctDataArcPair& pair_aa, const GraphData::UctDataArcPair& pair_bb) const
-    {
-        assert( pair_aa.first.count != 0 );
-        assert( pair_bb.first.count != 0 );
-
-        const double& score_aa = pair_aa.first.parent_score/pair_aa.first.count;
-        const double& score_bb = pair_bb.first.parent_score/pair_bb.first.count;
-
-        return score_aa < score_bb;
-    }
-};
-
 Move
 GraphData::get_best_move(const Node& parent, RandomEngine& re) const
 {
     assert( available_moves(parent) == 0 );
 
+    typedef std::pair<UctData, Arc> UctDataArcPair;
     typedef std::vector<UctDataArcPair> ChildrenUctDatas;
     ChildrenUctDatas children_uct_datas;
-    int total = 0;
 
     for (GraphData::OutArcIt oai(graph, parent); oai!=lemon::INVALID; ++oai)
     {
         const GraphData::Node& child = graph.target(oai);
         const GraphData::UctData& child_uct_data = node_uct_datas[child];
 
-        total += child_uct_data.count;
+        assert( child_uct_data.count > 0 );
         children_uct_datas.push_back(std::make_pair(child_uct_data, oai));
     }
 
-    //std::cout << "max scoring direction count check " <<
-    //std::cout << std::hex << node_state_hashes[parent] << std::dec << " ";
-    //std::cout << total << " " << node_uct_datas[parent].count << std::endl;
-    assert( total >= node_uct_datas[parent].count - 1 );
-
+    assert( !children_uct_datas.empty() );
     //FIXME not useful??
     std::random_shuffle(children_uct_datas.begin(), children_uct_datas.end(), [&re](const size_t size){ return re()%size; });
-    const UctDataArcPair& max_pair = *std::max_element(children_uct_datas.begin(), children_uct_datas.end(), ScoreComputerDirection());
 
-    return arc_moves[max_pair.second];
+    const std::function<double(const UctData&)> score = [](const UctData& data)
+        { return static_cast<double>(data.parent_score)/data.count; };
+
+    return arc_moves[std::max_element(children_uct_datas.begin(), children_uct_datas.end(),
+        [&score](const UctDataArcPair& aa, const UctDataArcPair& bb) { return score(aa.first) < score(bb.first); })->second];
 }
 
 Move
