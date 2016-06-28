@@ -97,11 +97,11 @@ int main(int argc, char* argv[])
     Player *player1 = dispatch_player(options.player1_name);
     GameLoop *game = new GameLoop(player0, player1, viewer);
 
-    QObject::connect(game, SIGNAL(updateState(const BoardState*)), viewer, SLOT(displayState(const BoardState*)));
+    QObject::connect(game, SIGNAL(stateUpdated(const BoardState*)), viewer, SLOT(displayState(const BoardState*)));
 
     QLabel* status = new QLabel();
 
-    QObject::connect(game, SIGNAL(statusChanged(const QString&)), status, SLOT(setText(const QString&)));
+    QObject::connect(game, SIGNAL(messageUpdated(const QString&)), status, SLOT(setText(const QString&)));
 
     QLabel* title = new QLabel();
 

@@ -28,6 +28,7 @@ add_executable(hex
     main.cpp
     board.cpp
     viewer.cpp
+    game.cpp
     game_qt.cpp
     player.cpp
     player_qt.cpp
