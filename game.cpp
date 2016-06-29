@@ -30,7 +30,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
     int player_winner = state.getWinner();
     while (player_winner < 0)
     {
-        cout << "loop for " << player_current << endl;
+        cout << "loop for p" << player_current << endl;
         if (status) {
             std::stringstream ss;
             ss << "requesting move for " << colors[player_current];
@@ -63,6 +63,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
     }
 
     cout << "finished" << endl;
+    cout << "p" << player_winner << " wins!!" << endl;
     if (status)
     {
         std::stringstream ss;
