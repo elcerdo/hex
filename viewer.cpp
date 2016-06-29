@@ -125,10 +125,11 @@ Viewer::displayState(const BoardState* state)
     {
         Tile* tile = dynamic_cast<Tile*>(item);
         Q_ASSERT(tile);
-        tile->setState( state->states[tile->getNode()] );
+        tile->setState( state->getState(tile->getNode()) );
     }
 }
 
+/*
 void
 Viewer::reconstructState(BoardState& state) const
 {
@@ -139,6 +140,7 @@ Viewer::reconstructState(BoardState& state) const
         state.states[tile->getNode()] = tile->getState();
     }
 }
+*/
 
 void
 Viewer::requestPlayerMove(const int player)

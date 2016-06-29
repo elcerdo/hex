@@ -33,12 +33,12 @@ struct BoardState
     typedef std::vector<bool> Victories;
 
     const Board& board;
-    States states;
 
     BoardState(const Board& board);
     BoardState(const BoardState& other);
     BoardState& operator=(const BoardState& other);
 
+    inline int getState(const Board::Node& node) const { return states[node]; }
     inline int getNextPlayer() const { return count%board.getNumberOfPlayers(); }
     int getWinner() const;
     Moves getAvailableMoves() const;
@@ -47,8 +47,9 @@ struct BoardState
 
     protected:
         int count;
+        States states;
 
-        friend size_t hash_value(const BoardState& state);
+    friend size_t hash_value(const BoardState& state);
 };
 
 
