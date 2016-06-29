@@ -87,10 +87,24 @@ Board::Board(const int size) : size(size), graph(), coords(graph)
     }
 }
 
+struct SameStateMap
+{
+    typedef Board::Graph::Edge Key;
+    typedef bool Value;
+
+    typedef Board::Graph::NodeMap<int> InputMap;
+
+    const Board::Graph& graph;
+    const InputMap& input_map;
+
+    SameStateMap(const Board::Graph& graph, const InputMap& input_map);
+
+    Value operator[](const Key& key) const;
+};
+
 SameStateMap::SameStateMap(const Board::Graph& graph_, const SameStateMap::InputMap& input_map_) : graph(graph_), input_map(input_map_)
 {
 }
-
 
 SameStateMap::Value
 SameStateMap::operator[](const SameStateMap::Key& key) const
@@ -98,12 +112,13 @@ SameStateMap::operator[](const SameStateMap::Key& key) const
     return input_map[graph.u(key)] == input_map[graph.v(key)];
 }
 
-BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.borders.size()), count(0)
+BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.get_number_of_players()), count(0)
 {
-    for (int player=0; player<board.borders.size(); player++)
+    for (int player=0; player<board.get_number_of_players(); player++)
     {
-        states[board.borders[player].first] = player;
-        states[board.borders[player].second]= player;
+        const Board::Border& border = board.get_border(player);
+        states[border.first] = player;
+        states[border.second] = player;
     }
 };
 
@@ -126,7 +141,7 @@ BoardState::getAvailableMoves() const
 {
     if (getWinner() >= 0) return Moves();
 
-    const int nplayers = board.borders.size();
+    const int nplayers = board.get_number_of_players();
     Moves moves;
     for (Board::Graph::NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
         if (states[ni] == nplayers) moves.push_back(ni);
@@ -151,9 +166,10 @@ BoardState::checkVictories() const
 
     SameStateMap selector(board.graph, states);
     Subgraph subgraph(board.graph, selector);
-    for (int player=0; player<board.borders.size(); player++)
+    for (int player=0; player<board.get_number_of_players(); player++)
     {
-        const bool victory = lemon::bfs(subgraph).run(board.borders[player].first, board.borders[player].second);
+        const Board::Border& border = board.get_border(player);
+        const bool victory = lemon::bfs(subgraph).run(border.first, border.second);
         victories.push_back(victory);
     }
 
@@ -163,9 +179,10 @@ BoardState::checkVictories() const
 bool
 BoardState::playMove(const Move& move)
 {
-    const int player = count % board.borders.size();
+    const int nplayers = board.get_number_of_players();
+    const int player = count%nplayers;
     if (!board.graph.valid(move)) return false;
-    if (states[move] != board.borders.size()) return false;
+    if (states[move] != nplayers) return false;
     states[move] = player;
     count++;
     return true;

@@ -10,29 +10,22 @@ struct Board
     typedef Graph::NodeMap<Coord> Coords;
     typedef Graph::Node Node;
     typedef std::pair<Node,Node> Border;
-    typedef std::vector<Border> Borders;
 
     int size;
     Graph graph;
     Coords coords;
-    Borders borders;
 
     Board(const int size=11);
-};
+    Board(const Board& board) = delete;
+    Board& operator=(const Board& board) = delete;
 
-struct SameStateMap
-{
-    typedef Board::Graph::Edge Key;
-    typedef bool Value;
+    inline int get_number_of_players() const { return borders.size(); }
+    inline const Border& get_border(int player) const { return borders[player]; }
 
-    typedef Board::Graph::NodeMap<int> InputMap;
+    protected:
+        typedef std::vector<Border> Borders;
 
-    const Board::Graph& graph;
-    const InputMap& input_map;
-
-    SameStateMap(const Board::Graph& graph, const InputMap& input_map);
-
-    Value operator[](const Key& key) const;
+        Borders borders;
 };
 
 typedef Board::Node Move;

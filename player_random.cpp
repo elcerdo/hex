@@ -13,15 +13,7 @@ PlayerRandom::update(const BoardState& state_)
 Move
 PlayerRandom::getMove()
 {
-    std::vector<Move> moves;
-
-    typedef Board::Graph::NodeIt NodeIt;
-    for (NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
-    {
-        if (state.states[ni] != board.borders.size()) continue;
-        moves.push_back(ni);
-    }
-
+    const Moves moves = state.getAvailableMoves();
     return moves[ re()%moves.size() ];
 }
 

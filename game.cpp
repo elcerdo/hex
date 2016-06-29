@@ -10,11 +10,13 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
     using std::cout;
     using std::endl;
 
+    const int nplayers = board.get_number_of_players();
+
     assert( player0 );
     assert( player1 );
     assert( &board == &player0->board );
     assert( &board == &player1->board );
-    assert( board.borders.size() == 2 );
+    assert( nplayers == 2 );
 
     player0->player = 0;
     player1->player = 1;
@@ -24,7 +26,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
     for (Player* player : players) player->update(state);
     if (status) status->updateState(state);
 
-    int player_current = state.count%board.borders.size();
+    int player_current = state.count%nplayers;
     int player_winner = state.getWinner();
     while (player_winner < 0)
     {
@@ -57,7 +59,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
         player_winner = state.getWinner();
 
         player_current++;
-        player_current %= state.board.borders.size();
+        player_current %= nplayers;
     }
 
     cout << "finished" << endl;
