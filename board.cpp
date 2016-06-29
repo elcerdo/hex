@@ -119,6 +119,8 @@ BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph
         const Board::Border& border = board.borders[player];
         states[border.first] = player;
         states[border.second] = player;
+        union_find.insert(border.first);
+        union_find.insert(border.second);
     }
 };
 
@@ -177,8 +179,26 @@ BoardState::playMove(const Move& move)
     if (!board.graph.valid(move)) return false;
     if (states[move] != nplayers) return false;
     states[move] = player;
+
+    typedef Board::Graph::IncEdgeIt EdgeIt;
+    union_find.insert(move);
+    for (EdgeIt ei(board.graph, move); ei!=lemon::INVALID; ++ei)
+    {
+        const Board::Node node_uu = board.graph.u(ei);
+        const Board::Node node_vv = board.graph.v(ei);
+        assert( node_uu == move || node_vv == move );
+        const Board::Node& node = node_uu == move ? node_vv : node_uu;
+        if (states[node] != player) continue;
+        union_find.join(move, node);
+    }
+    {
+        const Board::Border& border = board.borders[player];
+        if (union_find.find(border.first) == union_find.find(border.second))
+            winner = player;
+    }
+
+    assert( winner == checkWinnerBfs() );
     count++;
-    winner = checkWinnerBfs();
     return true;
 }
 
