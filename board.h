@@ -4,28 +4,24 @@
 
 struct Board
 {
-    typedef std::pair<int,int> Coord;
-
     typedef lemon::SmartGraph Graph;
-    typedef Graph::NodeMap<Coord> Coords;
     typedef Graph::Node Node;
+
+    typedef std::pair<int,int> Coord;
     typedef std::pair<Node,Node> Border;
 
-    int size;
+    typedef Graph::NodeMap<Coord> Coords;
+    typedef std::vector<Border> Borders;
+
     Graph graph;
     Coords coords;
+    Borders borders;
 
     Board(const int size=11);
     Board(const Board& board) = delete;
     Board& operator=(const Board& board) = delete;
 
-    inline int get_number_of_players() const { return borders.size(); }
-    inline const Border& get_border(int player) const { return borders[player]; }
-
-    protected:
-        typedef std::vector<Border> Borders;
-
-        Borders borders;
+    inline int getNumberOfPlayers() const { return borders.size(); }
 };
 
 typedef Board::Node Move;

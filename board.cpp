@@ -5,7 +5,7 @@
 #include <lemon/adaptors.h>
 #include <lemon/maps.h>
 
-Board::Board(const int size) : size(size), graph(), coords(graph)
+Board::Board(const int size) : graph(), coords(graph)
 {
     typedef boost::unordered_map<Coord,Node> Nodes;
 
@@ -112,11 +112,11 @@ SameStateMap::operator[](const SameStateMap::Key& key) const
     return input_map[graph.u(key)] == input_map[graph.v(key)];
 }
 
-BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.get_number_of_players()), count(0)
+BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.getNumberOfPlayers()), count(0)
 {
-    for (int player=0; player<board.get_number_of_players(); player++)
+    for (int player=0; player<board.getNumberOfPlayers(); player++)
     {
-        const Board::Border& border = board.get_border(player);
+        const Board::Border& border = board.borders[player];
         states[border.first] = player;
         states[border.second] = player;
     }
@@ -141,7 +141,7 @@ BoardState::getAvailableMoves() const
 {
     if (getWinner() >= 0) return Moves();
 
-    const int nplayers = board.get_number_of_players();
+    const int nplayers = board.getNumberOfPlayers();
     Moves moves;
     for (Board::Graph::NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
         if (states[ni] == nplayers) moves.push_back(ni);
@@ -166,9 +166,9 @@ BoardState::checkVictories() const
 
     SameStateMap selector(board.graph, states);
     Subgraph subgraph(board.graph, selector);
-    for (int player=0; player<board.get_number_of_players(); player++)
+    for (int player=0; player<board.getNumberOfPlayers(); player++)
     {
-        const Board::Border& border = board.get_border(player);
+        const Board::Border& border = board.borders[player];
         const bool victory = lemon::bfs(subgraph).run(border.first, border.second);
         victories.push_back(victory);
     }
@@ -179,7 +179,7 @@ BoardState::checkVictories() const
 bool
 BoardState::playMove(const Move& move)
 {
-    const int nplayers = board.get_number_of_players();
+    const int nplayers = board.getNumberOfPlayers();
     const int player = count%nplayers;
     if (!board.graph.valid(move)) return false;
     if (states[move] != nplayers) return false;

@@ -10,7 +10,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
     using std::cout;
     using std::endl;
 
-    const int nplayers = board.get_number_of_players();
+    const int nplayers = board.getNumberOfPlayers();
 
     assert( player0 );
     assert( player1 );

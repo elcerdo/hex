@@ -81,9 +81,9 @@ project(const Board::Coord& coord)
 bool
 is_interactive(const Board& board, const Board::Graph::Node& node)
 {
-    for (int player=0; player<board.get_number_of_players(); player++)
+    for (int player=0; player<board.getNumberOfPlayers(); player++)
     {
-        const Board::Border& border = board.get_border(player);
+        const Board::Border& border = board.borders[player];
         if (border.first == node) return false;
         if (border.second == node) return false;
     }
@@ -103,7 +103,7 @@ Viewer::Viewer(const Board& board, QWidget* parent) : draw_edges(false), board(b
         typedef Board::Graph::NodeIt NodeIt;
         for (NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
         {
-            Tile* item = new Tile(ni, board.get_number_of_players(), is_interactive(board, ni), polygon);
+            Tile* item = new Tile(ni, board.getNumberOfPlayers(), is_interactive(board, ni), polygon);
             item->setPos(project(board.coords[ni]));
             scene->addItem(item);
         }
