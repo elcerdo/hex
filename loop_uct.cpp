@@ -37,6 +37,9 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
 
     // play random until end of game
     int winner = state.getWinner();
+
+    /*
+    // generic loop
     while ( winner < 0 )
     {
         const Moves& possible_moves = state.getAvailableMoves();
@@ -45,6 +48,20 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
         assert( valid );
         winner = state.getWinner();
     }
+    */
+
+    // hex specific
+    Moves available_moves = state.getAvailableMoves();
+    std::random_shuffle(available_moves.begin(), available_moves.end(), [&re](const size_t size){ return re()%size; });
+    while ( winner < 0 && !available_moves.empty() )
+    {
+        const Move selected_move = available_moves.back();
+        const bool valid = state.playMove(selected_move);
+        assert( valid );
+        winner = state.getWinner();
+        available_moves.pop_back();
+    }
+
     assert( state.getWinner() >= 0 );
 
     // propagate mc value backward
