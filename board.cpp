@@ -140,7 +140,7 @@ BoardState::operator=(const BoardState& other)
 Moves
 BoardState::getAvailableMoves() const
 {
-    if (getWinner() >= 0) return Moves();
+    if (winner >= 0) return Moves();
 
     const int nplayers = board.getNumberOfPlayers();
     Moves moves;
@@ -160,7 +160,7 @@ BoardState::checkWinnerBfs() const
     {
         const Board::Border& border = board.borders[player];
         const bool victory = lemon::bfs(subgraph).run(border.first, border.second);
-        return player;
+        if (victory) return player;
     }
 
     return -1;
