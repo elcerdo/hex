@@ -112,18 +112,17 @@ SameStateMap::operator[](const SameStateMap::Key& key) const
     return input_map[graph.u(key)] == input_map[graph.v(key)];
 }
 
-BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.getNumberOfPlayers()), count(0), victories()
+BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.getNumberOfPlayers()), count(0), winner(-1)
 {
     for (int player=0; player<board.getNumberOfPlayers(); player++)
     {
         const Board::Border& border = board.borders[player];
         states[border.first] = player;
         states[border.second] = player;
-        victories.push_back(false);
     }
 };
 
-BoardState::BoardState(const BoardState& other) : board(other.board), states(other.board.graph), count(other.count), victories(other.victories)
+BoardState::BoardState(const BoardState& other) : board(other.board), states(other.board.graph), count(other.count), winner(other.winner)
 {
     lemon::mapCopy(board.graph, other.states, states);
 }
@@ -134,7 +133,7 @@ BoardState::operator=(const BoardState& other)
     assert( &board == &other.board );
     lemon::mapCopy(board.graph, other.states, states);
     count = other.count;
-    victories = other.victories;
+    winner = other.winner;
     return *this;
 }
 
@@ -151,19 +150,9 @@ BoardState::getAvailableMoves() const
 }
 
 int
-BoardState::getWinner() const
-{
-    for (int player=0; player<victories.size(); player++)
-        if (victories[player]) return player;
-    return -1;
-}
-
-BoardState::Victories
-BoardState::checkVictories() const
+BoardState::checkWinner() const
 {
     typedef lemon::FilterEdges<const Board::Graph, const SameStateMap> Subgraph;
-
-    Victories victories;
 
     SameStateMap selector(board.graph, states);
     Subgraph subgraph(board.graph, selector);
@@ -171,10 +160,10 @@ BoardState::checkVictories() const
     {
         const Board::Border& border = board.borders[player];
         const bool victory = lemon::bfs(subgraph).run(border.first, border.second);
-        victories.push_back(victory);
+        return player;
     }
 
-    return victories;
+    return -1;
 }
 
 bool
@@ -186,7 +175,7 @@ BoardState::playMove(const Move& move)
     if (states[move] != nplayers) return false;
     states[move] = player;
     count++;
-    victories = checkVictories();
+    winner = checkWinner();
     return true;
 }
 
