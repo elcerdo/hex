@@ -112,17 +112,18 @@ SameStateMap::operator[](const SameStateMap::Key& key) const
     return input_map[graph.u(key)] == input_map[graph.v(key)];
 }
 
-BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.getNumberOfPlayers()), count(0)
+BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board.getNumberOfPlayers()), count(0), victories()
 {
     for (int player=0; player<board.getNumberOfPlayers(); player++)
     {
         const Board::Border& border = board.borders[player];
         states[border.first] = player;
         states[border.second] = player;
+        victories.push_back(false);
     }
 };
 
-BoardState::BoardState(const BoardState& other) : board(other.board), states(other.board.graph), count(other.count)
+BoardState::BoardState(const BoardState& other) : board(other.board), states(other.board.graph), count(other.count), victories(other.victories)
 {
     lemon::mapCopy(board.graph, other.states, states);
 }
@@ -131,8 +132,9 @@ BoardState&
 BoardState::operator=(const BoardState& other)
 {
     assert( &board == &other.board );
-    count = other.count;
     lemon::mapCopy(board.graph, other.states, states);
+    count = other.count;
+    victories = other.victories;
     return *this;
 }
 
@@ -151,7 +153,6 @@ BoardState::getAvailableMoves() const
 int
 BoardState::getWinner() const
 {
-    const Victories& victories = checkVictories();
     for (int player=0; player<victories.size(); player++)
         if (victories[player]) return player;
     return -1;
@@ -185,6 +186,7 @@ BoardState::playMove(const Move& move)
     if (states[move] != nplayers) return false;
     states[move] = player;
     count++;
+    victories = checkVictories();
     return true;
 }
 

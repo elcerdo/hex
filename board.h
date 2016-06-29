@@ -30,7 +30,6 @@ typedef std::vector<Move> Moves;
 struct BoardState
 {
     typedef Board::Graph::NodeMap<int> States;
-    typedef std::vector<bool> Victories;
 
     const Board& board;
 
@@ -42,12 +41,16 @@ struct BoardState
     inline int getNextPlayer() const { return count%board.getNumberOfPlayers(); }
     int getWinner() const;
     Moves getAvailableMoves() const;
-    Victories checkVictories() const;
     bool playMove(const Move& move);
 
     protected:
-        int count;
+        typedef std::vector<bool> Victories;
+
         States states;
+        int count;
+        Victories victories;
+
+        Victories checkVictories() const;
 
     friend size_t hash_value(const BoardState& state);
 };
