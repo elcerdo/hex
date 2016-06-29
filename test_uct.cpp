@@ -156,6 +156,56 @@ int main(int argc, char* argv[])
         const std::pair<Move, GraphData::UctData> best_move = graph_data.get_best_move(root, re);
         cout << "best move is " << move_coord(board, best_move.first) << endl;
     }
+    cout << endl << endl;
+
+    { // test union_find
+        typedef Board::Graph::NodeMap<int> Components;
+        typedef lemon::UnionFind<Components> UnionFind;
+
+        Components components(board.graph, 0);
+        UnionFind union_find(components);
+
+
+        for (const Board::Border& border : board.borders)
+            cout << "insert " << union_find.insert(border.first) << " " << union_find.insert(border.second) << endl;
+
+        for (const Board::Border& border : board.borders)
+        {
+            cout << "find ";
+            cout << components[border.first] << "/" << union_find.find(border.first) << "(" << union_find.size(border.first)  << ") ";
+            cout << components[border.second] << "/" << union_find.find(border.second) << "(" << union_find.size(border.second)  << ")" << endl;
+        }
+
+        const Board::Node& aa = board.graph.nodeFromId(2);
+        const Board::Node& bb = board.graph.nodeFromId(3);
+        cout << "aa " << move_coord(board, aa) << " bb " << move_coord(board, bb) << endl;
+        cout << "insert " << union_find.insert(aa) << " " << union_find.insert(bb) << endl;
+        cout << "join " << union_find.join(aa, bb) << endl;
+        cout << "join " << union_find.join(bb, aa) << endl;
+        cout << "join " << union_find.join(aa, board.borders[1].second) << endl;
+
+        cout << "find ";
+        cout << components[aa] << "/" << union_find.find(aa) << "(" << union_find.size(aa) << ") ";
+        cout << components[bb] << "/" << union_find.find(bb) << "(" << union_find.size(bb) << ")" << endl;
+        for (const Board::Border& border : board.borders)
+        {
+            cout << "find ";
+            cout << components[border.first] << "/" << union_find.find(border.first) << "(" << union_find.size(border.first)  << ") ";
+            cout << components[border.second] << "/" << union_find.find(border.second) << "(" << union_find.size(border.second)  << ")" << endl;
+        }
+
+        cout << "join " << union_find.join(bb, board.borders[1].first) << endl;
+
+        cout << "find ";
+        cout << components[aa] << "/" << union_find.find(aa) << "(" << union_find.size(aa) << ") ";
+        cout << components[bb] << "/" << union_find.find(bb) << "(" << union_find.size(bb) << ")" << endl;
+        for (const Board::Border& border : board.borders)
+        {
+            cout << "find ";
+            cout << components[border.first] << "/" << union_find.find(border.first) << "(" << union_find.size(border.first)  << ") ";
+            cout << components[border.second] << "/" << union_find.find(border.second) << "(" << union_find.size(border.second)  << ")" << endl;
+        }
+    }
 
     return 0;
 }
