@@ -29,8 +29,6 @@ typedef std::vector<Move> Moves;
 
 struct BoardState
 {
-    typedef Board::Graph::NodeMap<int> States;
-
     const Board& board;
 
     BoardState(const Board& board);
@@ -44,11 +42,13 @@ struct BoardState
     bool playMove(const Move& move);
 
     protected:
+        typedef Board::Graph::NodeMap<int> States;
+
         States states;
         int count;
         int winner;
 
-        int checkWinner() const;
+        int checkWinnerBfs() const;
 
     friend size_t hash_value(const BoardState& state);
 };

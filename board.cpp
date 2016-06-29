@@ -150,7 +150,7 @@ BoardState::getAvailableMoves() const
 }
 
 int
-BoardState::checkWinner() const
+BoardState::checkWinnerBfs() const
 {
     typedef lemon::FilterEdges<const Board::Graph, const SameStateMap> Subgraph;
 
@@ -175,7 +175,7 @@ BoardState::playMove(const Move& move)
     if (states[move] != nplayers) return false;
     states[move] = player;
     count++;
-    winner = checkWinner();
+    winner = checkWinnerBfs();
     return true;
 }
 
