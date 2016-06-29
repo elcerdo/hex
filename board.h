@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lemon/smart_graph.h>
+#include "unionfind.h"
 
 struct Board
 {
@@ -43,10 +44,15 @@ struct BoardState
 
     protected:
         typedef Board::Graph::NodeMap<int> States;
+        typedef Board::Graph::NodeMap<int> Components;
+        typedef lemon::UnionFind<Components> UnionFind;
 
         States states;
         int count;
         int winner;
+
+        Components components;
+        UnionFind union_find;
 
         int checkWinnerBfs() const;
 
