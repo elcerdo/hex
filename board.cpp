@@ -112,7 +112,7 @@ SameStateMap::operator[](const SameStateMap::Key& key) const
     return input_map[graph.u(key)] == input_map[graph.v(key)];
 }
 
-BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board_.getNumberOfPlayers()), count(0), winner(-1), components(board_.graph, -1), union_find(components)
+BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board_.getNumberOfPlayers()), count(0), winner(-1), components(board_.graph, 0), union_find(components)
 {
     for (int player=0; player<board.getNumberOfPlayers(); player++)
     {
@@ -122,7 +122,7 @@ BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph
     }
 };
 
-BoardState::BoardState(const BoardState& other) : board(other.board), states(other.board.graph), count(other.count), winner(other.winner), components(other.board.graph), union_find(components)
+BoardState::BoardState(const BoardState& other) : board(other.board), states(other.board.graph), count(other.count), winner(other.winner), components(other.board.graph), union_find(components, other.union_find.items)
 {
     lemon::mapCopy(board.graph, other.states, states);
     lemon::mapCopy(board.graph, other.components, components);
@@ -136,6 +136,7 @@ BoardState::operator=(const BoardState& other)
     lemon::mapCopy(board.graph, other.components, components);
     count = other.count;
     winner = other.winner;
+    union_find.items = other.union_find.items;
     return *this;
 }
 

@@ -165,7 +165,6 @@ int main(int argc, char* argv[])
         Components components(board.graph, 0);
         UnionFind union_find(components);
 
-
         for (const Board::Border& border : board.borders)
             cout << "insert " << union_find.insert(border.first) << " " << union_find.insert(border.second) << endl;
 

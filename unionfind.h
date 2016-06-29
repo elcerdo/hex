@@ -60,13 +60,14 @@ namespace lemon {
     ///\e
     typedef typename ItemIntMap::Key Item;
 
-  private:
+  public:
     // If the items vector stores negative value for an item then
     // that item is root item and it has -items[it] component size.
     // Else the items[it] contains the index of the parent.
     std::vector<int> items;
     ItemIntMap& index;
 
+  private:
     bool rep(int idx) const {
       return items[idx] < 0;
     }
@@ -94,6 +95,7 @@ namespace lemon {
     /// invalid data structure, or infinite loop when you use again
     /// the union-find.
     UnionFind(ItemIntMap& m) : index(m) {}
+    UnionFind(ItemIntMap& m, const std::vector<int>& i) : items(i), index(m) {}
 
     /// \brief Returns the index of the element's component.
     ///
