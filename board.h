@@ -34,17 +34,21 @@ struct BoardState
 
     const Board& board;
     States states;
-    int count;
 
     BoardState(const Board& board);
     BoardState(const BoardState& other);
     BoardState& operator=(const BoardState& other);
 
+    inline int getNextPlayer() const { return count%board.getNumberOfPlayers(); }
     int getWinner() const;
     Moves getAvailableMoves() const;
     Victories checkVictories() const;
     bool playMove(const Move& move);
+
+    protected:
+        int count;
+
+        friend size_t hash_value(const BoardState& state);
 };
 
-size_t hash_value(const BoardState& state);
 

@@ -105,7 +105,7 @@ GraphData::create_node(const HashedPair<BoardState>& hashed_state, RandomEngine&
     nodes_cache.insert(std::make_pair(hashed_state.hash, node));
 
     UctData uct_data;
-    uct_data.parent_player = (hashed_state.value.count+1) % 2;
+    uct_data.parent_player = (hashed_state.value.getNextPlayer()+1) % 2;
     uct_data.parent_score = 0;
     uct_data.count = 0;
     node_uct_datas[node] = uct_data;

@@ -26,7 +26,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
     for (Player* player : players) player->update(state);
     if (status) status->updateState(state);
 
-    int player_current = state.count%nplayers;
+    int player_current = state.getNextPlayer();
     int player_winner = state.getWinner();
     while (player_winner < 0)
     {
