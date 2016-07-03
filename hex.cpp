@@ -12,6 +12,7 @@ struct Options
     std::string player1_name;
     double uct_constant;
     double uct_time;
+    bool uct_prune;
 };
 
 Options
@@ -31,6 +32,7 @@ parse_options(int argc, char* argv[])
         ("black,b", po::value<std::string>(&options.player1_name)->default_value("human"))
         ("uct-constant,c", po::value<double>(&options.uct_constant)->default_value(.5))
         ("uct-time,t", po::value<double>(&options.uct_time)->default_value(3));
+        ("uct-prune,p", po::value<bool>(&options.uct_prune)->default_value(false));
 
     try
     {
@@ -87,7 +89,7 @@ int main(int argc, char* argv[])
     {
         if (name == "human") return static_cast<Player*>(new PlayerQt(board, viewer));
         if (name == "random") return static_cast<Player*>(new PlayerRandom(board, std::chrono::system_clock::now().time_since_epoch().count()));
-        if (name == "uct") return static_cast<Player*>(new PlayerUct(board, options.uct_constant, options.uct_time, std::chrono::system_clock::now().time_since_epoch().count()));
+        if (name == "uct") return static_cast<Player*>(new PlayerUct(board, options.uct_constant, options.uct_time, options.uct_prune, std::chrono::system_clock::now().time_since_epoch().count()));
         cerr << "bad player name '" << name << "'" << endl;
         std::exit(1);
         return static_cast<Player*>(NULL);

@@ -3,7 +3,7 @@
 #include "loop_uct.h"
 #include <iomanip>
 
-PlayerUct::PlayerUct(const Board& board, const double uct_constant, const double crunch_time_, const size_t seed) : Player(board, "uct"), re(seed), graph_data(uct_constant), state(board), crunch_time(crunch_time_)
+PlayerUct::PlayerUct(const Board& board, const double uct_constant, const double crunch_time_, const bool prune_, const size_t seed) : Player(board, "uct"), re(seed), graph_data(uct_constant), state(board), crunch_time(crunch_time_), prune(prune_)
 {
 }
 
@@ -19,7 +19,7 @@ PlayerUct::getMove()
     const HashedPair<BoardState> hashed_state(state);
 
     std::cout << graph_data << std::endl;
-    crunch_it_baby(graph_data, re, hashed_state, crunch_time);
+    crunch_it_baby(graph_data, re, hashed_state, crunch_time, prune);
     std::cout << graph_data << std::endl;
 
     assert( graph_data.contains(hashed_state) );

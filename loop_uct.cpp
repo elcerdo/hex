@@ -69,30 +69,29 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
 }
 
 void
-crunch_it_baby(GraphData& graph_data, RandomEngine& re, const HashedPair<BoardState>& hashed_state, const double duration_max)
+crunch_it_baby(GraphData& graph_data, RandomEngine& re, const HashedPair<BoardState>& hashed_state, const double duration_max, const bool prune)
 {
     const double start_time = get_double_time();
-    double current_time = start_time;
 
-    const double prunning_start_time = get_double_time();
+    if (!graph_data.contains(hashed_state))
     {
-        if (!graph_data.contains(hashed_state))
-        {
-            std::cout << "WARNING!!! unknown game state" << std::endl;
-            graph_data.get_or_create_node(hashed_state, re);
-        }
+        std::cout << "WARNING!!! unknown game state" << std::endl;
+        graph_data.get_or_create_node(hashed_state, re);
+    }
+
+    if (prune) {
+        const double prunning_start_time = get_double_time();
 
         const GraphData::Node& root = graph_data.get_node(hashed_state);
         graph_data.prune_below(root);
 
+        const double prunning_end_time = get_double_time();
+        std::cout << "prunning took " << clock_it(prunning_end_time-prunning_start_time) << std::endl;
     }
-    const double prunning_end_time = get_double_time();
-    std::cout << "prunning took " << clock_it(prunning_end_time-prunning_start_time) << std::endl;
 
     int mc_count = 0;
-    current_time = get_double_time();
-    const double mc_start_time = current_time;
-
+    const double mc_start_time = get_double_time();
+    double current_time = mc_start_time;
     while (current_time - start_time < duration_max)
     {
         play_one_sequence(graph_data, re, hashed_state);
