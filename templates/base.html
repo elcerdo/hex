@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8"/>
         <title>{% block title %}{% endblock %} -- hex uct bot</title>
+        <script type="text/javascript" src='{{ url_for("static", filename="jquery.min.js") }}'></script>
+        <link rel="stylesheet" type="text/css" href='{{ url_for("static", filename="style.css") }}'></link>
     </head>
     <body>
         <div id="header">
             {% block header %}
-            this is header
+            <a href="{{ url_for('root') }}">root</a>
+            <a href="{{ url_for('newgame') }}">new game</a>
             {% endblock %}
         </div>
         <div id="content">
             {% block content %}
             this is the main page
+            {% endblock %}
+        </div>
+        <div id="footer">
+            {% block footer %}
+            {{ route_name }}
             {% endblock %}
         </div>
     </body>
