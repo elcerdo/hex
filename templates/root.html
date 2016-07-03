@@ -1,3 +1,14 @@
 {% extends "base.html" %}
 {% block title %}welcome to hex uct bot !!!{% endblock %}
+{% block content %}
+{% if games %}
+<ul class="games">
+    {% for game in games %}
+    <li>{{ game[0] }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+no games
+{% endif %}
+{% endblock %}
 

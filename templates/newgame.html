@@ -1,3 +1,15 @@
 {% extends "base.html" %}
 {% block title %}start new game{% endblock %}
+{% block content %}
+<form method="post" action="{{ url_for('newgame') }}">
+    <label for="name">Player name</label><input type="text" name="name" value="prout"/><br/>
+    <label for="color">Player color</label>
+    <input type="radio" name="color" value="white" checked>White</input>
+    <input type="radio" name="color" value="black">Black</input><br/>
+    <label for="uct_constant">UCT constant</label><input type="text" name="uct_constant" value="1"/><br/>
+    <label for="uct_time">Time</label><input type="text" name="uct_time" value="3"/><br/>
+    <label for="uct_prune">Prune</label><input type="checkbox" name="uct_prune" checked/><br/>
+    <input type="submit" value="NEW GAME"/>
+</form>
+{% endblock %}
 
