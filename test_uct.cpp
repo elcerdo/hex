@@ -22,7 +22,10 @@ std::ostream&
 operator<<(std::ostream& os, const HashedPair<BoardState>& hashed_state)
 {
     using std::endl;
-    os << "<BoardState h=" << std::hex << hashed_state.hash << std::dec << " w=" << hashed_state.value.getWinner() << " ";
+    os << "<BoardState ";
+    os << "b=" << std::hex << hashed_state.value.board_hash << std::dec << " ";
+    os << "h=" << std::hex << hashed_state.hash << std::dec << " ";
+    os << "w=" << hashed_state.value.getWinner() << " ";
 
     bool first = true;
     os << "a=[";
@@ -59,22 +62,39 @@ int main(int argc, char* argv[])
     BoardState state(board);
     cout << state << endl;
 
-    { // check board hash
-        Board board_copy(3);
-        BoardState state_copy(board_copy);
-        cout << std::hex << hash_value(board) << std::dec << endl;
-        cout << std::hex << hash_value(board_copy) << std::dec << endl;
-        cout << state_copy << endl;
-    }
-
-    { // check copy state
-        const BoardState state_assign = state;
+    { // check board state hash
         const BoardState state_copy(state);
-        fatal_error( hash_value(state) == hash_value(state_assign), "assign operator hash mismatch" );
-        fatal_error( hash_value(state) == hash_value(state_copy), "copy constructor hash mismatch" );
+        BoardState state_assign(board);
+        state_assign = state;
+        fatal_error( hash_value(state) == hash_value(state_assign), "board state assign operator hash mismatch" );
+        fatal_error( hash_value(state) == hash_value(state_copy), "board state copy constructor hash mismatch" );
     }
 
-    /*
+    { // check board hash
+        Board board_other(3);
+        fatal_error( hash_value(board) == hash_value(board_other), "board hash mismatch" );
+
+        BoardState state_other(board_other);
+        BoardState state_origin(board);
+        state_origin = state_other;
+        fatal_error( hash_value(state) == hash_value(state_other), "board state initial hash mismatch" );
+        fatal_error( hash_value(state) == hash_value(state_origin), "board state initial hash mismatch" );
+
+        {
+            const Move move = board.graph.nodeFromId(3);
+            state_other.playMove(move);
+            state_origin.playMove(move);
+            fatal_error( hash_value(state_origin) == hash_value(state_other), "board state origin move hash mismatch" );
+        }
+
+        {
+            const Move move = board_other.graph.nodeFromId(2);
+            state_other.playMove(move);
+            state_origin.playMove(move);
+            fatal_error( hash_value(state_origin) == hash_value(state_other), "board state other move hash mismatch" );
+        }
+    }
+
     { // check associativity
         const double time_start = get_double_time();
 
@@ -214,7 +234,6 @@ int main(int argc, char* argv[])
             cout << components[border.second] << "/" << union_find.find(border.second) << "(" << union_find.size(border.second)  << ")" << endl;
         }
     }
-    */
 
     return 0;
 }

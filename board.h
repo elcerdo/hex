@@ -33,6 +33,7 @@ typedef std::vector<Move> Moves;
 struct BoardState
 {
     const Board& board;
+    const size_t board_hash;
 
     BoardState(const Board& board);
     BoardState(const BoardState& other);

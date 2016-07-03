@@ -112,7 +112,7 @@ SameStateMap::operator[](const SameStateMap::Key& key) const
     return input_map[graph.u(key)] == input_map[graph.v(key)];
 }
 
-BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph, board_.getNumberOfPlayers()), count(0), winner(-1), components(board_.graph, 0), union_find(components)
+BoardState::BoardState(const Board& board_) : board(board_), board_hash(hash_value(board_)), states(board_.graph, board_.getNumberOfPlayers()), count(0), winner(-1), components(board_.graph, 0), union_find(components)
 {
     for (int player=0; player<board.getNumberOfPlayers(); player++)
     {
@@ -124,7 +124,7 @@ BoardState::BoardState(const Board& board_) : board(board_), states(board_.graph
     }
 };
 
-BoardState::BoardState(const BoardState& other) : board(other.board), states(other.board.graph), count(other.count), winner(other.winner), components(other.board.graph), union_find(components, other.union_find.items)
+BoardState::BoardState(const BoardState& other) : board(other.board), board_hash(other.board_hash), states(other.board.graph), count(other.count), winner(other.winner), components(other.board.graph), union_find(components, other.union_find.items)
 {
     lemon::mapCopy(board.graph, other.states, states);
     lemon::mapCopy(board.graph, other.components, components);
@@ -133,7 +133,7 @@ BoardState::BoardState(const BoardState& other) : board(other.board), states(oth
 BoardState&
 BoardState::operator=(const BoardState& other)
 {
-    assert( &board == &other.board );
+    assert( board_hash == other.board_hash );
     lemon::mapCopy(board.graph, other.states, states);
     lemon::mapCopy(board.graph, other.components, components);
     count = other.count;
@@ -234,7 +234,7 @@ hash_value(const Board& board)
 size_t
 hash_value(const BoardState& state)
 {
-    size_t hash = reinterpret_cast<size_t>(&state.board);
+    size_t hash = state.board_hash;
     boost::hash_combine(hash, state.count);
     for (Board::Graph::NodeIt ni(state.board.graph); ni!=lemon::INVALID; ++ni)
         boost::hash_combine(hash, state.states[ni]);
