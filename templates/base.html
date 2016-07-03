@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %} -- hex uct bot</title>
+    </head>
+    <body>
+        <div id="header">
+            {% block header %}
+            this is header
+            {% endblock %}
+        </div>
+        <div id="content">
+            {% block content %}
+            this is the main page
+            {% endblock %}
+        </div>
+    </body>
+</html>
