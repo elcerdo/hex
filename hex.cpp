@@ -31,7 +31,7 @@ parse_options(int argc, char* argv[])
         ("white,w", po::value<std::string>(&options.player0_name)->default_value("human"))
         ("black,b", po::value<std::string>(&options.player1_name)->default_value("human"))
         ("uct-constant,c", po::value<double>(&options.uct_constant)->default_value(.5))
-        ("uct-time,t", po::value<double>(&options.uct_time)->default_value(3));
+        ("uct-time,t", po::value<double>(&options.uct_time)->default_value(3))
         ("uct-prune,p", po::value<bool>(&options.uct_prune)->default_value(false));
 
     try
