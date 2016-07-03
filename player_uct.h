@@ -11,9 +11,10 @@ struct PlayerUct : public Player
     BoardState state;
     RandomEngine re;
     double crunch_time;
-    bool prune;
+    int prune_skip;
+    int prune_count;
 
-    PlayerUct(const Board& board, const double uct_constant, const double crunch_time, const bool prune, const size_t seed);
+    PlayerUct(const Board& board, const double uct_constant, const double crunch_time, const int prune_skip, const size_t seed);
     void update(const BoardState& state) override;
     Move getMove() override;
 };
