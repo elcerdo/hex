@@ -23,6 +23,8 @@ struct Board
     Board& operator=(const Board& board) = delete;
 
     inline int getNumberOfPlayers() const { return borders.size(); }
+
+    friend size_t hash_value(const Board& board);
 };
 
 typedef Board::Node Move;

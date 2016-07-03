@@ -203,6 +203,35 @@ BoardState::playMove(const Move& move)
 }
 
 size_t
+hash_value(const Board& board)
+{
+    size_t hash = 1234567890;
+    boost::hash_combine(hash, lemon::countNodes(board.graph));
+    for (Board::Graph::NodeIt ni(board.graph); ni!=lemon::INVALID; ++ni)
+    {
+        const Board::Coord& coord = board.coords[ni];
+        boost::hash_combine(hash, coord.first);
+        boost::hash_combine(hash, coord.second);
+    }
+
+    boost::hash_combine(hash, lemon::countEdges(board.graph));
+    for (Board::Graph::EdgeIt ei(board.graph); ei!=lemon::INVALID; ++ei)
+    {
+        boost::hash_combine(hash, board.graph.id(board.graph.u(ei)));
+        boost::hash_combine(hash, board.graph.id(board.graph.v(ei)));
+    }
+
+    boost::hash_combine(hash, board.borders.size());
+    for (const Board::Border& border : board.borders)
+    {
+        boost::hash_combine(hash, board.graph.id(border.first));
+        boost::hash_combine(hash, board.graph.id(border.second));
+    }
+
+    return hash;
+}
+
+size_t
 hash_value(const BoardState& state)
 {
     size_t hash = reinterpret_cast<size_t>(&state.board);

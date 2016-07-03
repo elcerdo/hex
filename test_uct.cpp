@@ -59,6 +59,14 @@ int main(int argc, char* argv[])
     BoardState state(board);
     cout << state << endl;
 
+    { // check board hash
+        Board board_copy(3);
+        BoardState state_copy(board_copy);
+        cout << std::hex << hash_value(board) << std::dec << endl;
+        cout << std::hex << hash_value(board_copy) << std::dec << endl;
+        cout << state_copy << endl;
+    }
+
     { // check copy state
         const BoardState state_assign = state;
         const BoardState state_copy(state);
@@ -66,6 +74,7 @@ int main(int argc, char* argv[])
         fatal_error( hash_value(state) == hash_value(state_copy), "copy constructor hash mismatch" );
     }
 
+    /*
     { // check associativity
         const double time_start = get_double_time();
 
@@ -205,6 +214,7 @@ int main(int argc, char* argv[])
             cout << components[border.second] << "/" << union_find.find(border.second) << "(" << union_find.size(border.second)  << ")" << endl;
         }
     }
+    */
 
     return 0;
 }
