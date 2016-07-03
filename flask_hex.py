@@ -32,9 +32,9 @@ def newgame():
             print(player_name, player_is_white)
             print(uct_time, uct_prune, uct_constant)
             games.append((player_name, player_is_white, uct_time, uct_prune, uct_constant))
-            flask.flash("new game created")
+            flask.flash("new game created", "info")
             return flask.redirect(flask.url_for('root'))
         except ValueError:
-            flask.flash("invalid new game")
+            flask.flash("invalid new game", "error")
     return flask.render_template("newgame.html", route_name="newgame")
 

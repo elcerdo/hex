@@ -5,12 +5,13 @@
         <title>{% block title %}{% endblock %} -- hex uct bot</title>
         <script type="text/javascript" src='{{ url_for("static", filename="jquery.min.js") }}'></script>
         <link rel="stylesheet" type="text/css" href='{{ url_for("static", filename="style.css") }}'></link>
+        <link rel="stylesheet" href="{{ url_for('static', filename='pure-min.css') }}"></link>
     </head>
     <body>
         <div id="header">
             {% block header %}
-            <a href="{{ url_for('root') }}">root</a>
-            <a href="{{ url_for('newgame') }}">new game</a>
+            <a href="{{ url_for('root') }}"><img src="{{ url_for("static", filename="hex.png") }}" alt="home"/></a>
+            <a href="{{ url_for('newgame') }}">new</a>
             {% endblock %}
         </div>
         <div id="content">
@@ -21,11 +22,11 @@
         <div id="footer">
             {% block footer %}
             {{ route_name }}
-            {% with messages = get_flashed_messages() %}
+            {% with messages = get_flashed_messages(with_categories=True) %}
             {% if messages %}
-            <ul class="flashes">
-                {% for message in messages %}
-                <li>{{ message }}</li>
+            <ul id="flashes">
+                {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
                 {% endfor %}
             </ul>
             {% endif %}

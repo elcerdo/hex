@@ -1,10 +1,67 @@
 body
 {
-    background-color: red;
+    margin: 0px;
+    font-family: sans-serif;
+    color: #555;
 }
 
-.flashes
+#header
 {
-    background-color: green;
+    background-color: white;
+    padding: 5px;
+    border-bottom: 3px solid black;
 }
 
+#header
+{
+    font-weight: bold;
+}
+
+#header a
+{
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+}
+
+#header a:hover
+{
+    color: red;
+}
+
+#content
+{
+    padding: 10px;
+    color: black;
+}
+
+#footer
+{
+    background-color: white;
+    padding: 10px;
+    color: #777;
+}
+
+#flashes
+{
+    list-style: none inside;
+    padding: 0px;
+    color: black;
+}
+
+#flashes li
+{
+    margin: 2px;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+#flashes .info
+{
+    background-color: #7f7;
+}
+
+#flashes .error
+{
+    background-color: #f77;
+}
