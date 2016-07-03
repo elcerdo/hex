@@ -25,7 +25,7 @@ qt4_wrap_cpp(sources_moc_gui
 
 add_executable(hex
     utils.cpp
-    main.cpp
+    hex.cpp
     board.cpp
     viewer.cpp
     game.cpp
@@ -41,7 +41,6 @@ add_executable(hex
 
 target_link_libraries(hex
     ${LEMON_LIBRARIES}
-    ${Boost_REGEX_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     QtCore QtGui
     )
