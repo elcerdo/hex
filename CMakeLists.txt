@@ -7,10 +7,15 @@ set(CMAKE_CXX_FLAGS "--std=c++11")
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS
+    python-py35
     program_options
     REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
+set(Boost_PYTHON_LIBRARY boost_python-py35)
+
+find_package(PythonLibs 3.5 EXACT REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 find_package(LEMON
     REQUIRED)
@@ -69,5 +74,14 @@ add_executable(stress_uct
 
 target_link_libraries(stress_uct
     hex_uct
+    )
+
+add_library(hex_uct_ext SHARED
+    hex_uct_ext.cpp
+    )
+
+target_link_libraries(hex_uct_ext
+    ${Boost_PYTHON_LIBRARY}
+    ${PYTHON_LIBRARY}
     )
 
