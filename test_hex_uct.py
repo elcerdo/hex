@@ -10,3 +10,6 @@ sys.path.append("build")
 import libhex_uct_ext as hex_uct
 
 print(hex_uct.hello_world())
+aa = hex_uct.Move()
+
+
