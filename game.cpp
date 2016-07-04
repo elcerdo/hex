@@ -67,7 +67,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
     if (status)
     {
         std::stringstream ss;
-        ss << colors[player_winner] << " wins!!" << endl;
+        ss << colors[player_winner] << " wins!!";
         status->updateMessage(ss.str());
     }
 
