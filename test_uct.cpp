@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
         const GraphData::Node root = graph_data.get_or_create_node(state, re).second;
         cout << graph_data << endl;
 
-        crunch_it_baby(graph_data, re, state, 3, false);
+        crunch_it_baby(graph_data, re, state, 3, false, std::cout);
 
         cout << graph_data << endl;
         graph_data.print_from_root(cout, root, "", 1);

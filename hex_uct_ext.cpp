@@ -1,5 +1,6 @@
 #include <boost/python.hpp>
 #include <iostream>
+#include <fstream>
 #include "board.h"
 #include "game.h"
 #include "player_uct.h"
@@ -57,8 +58,10 @@ GamePython::updateMessage(const std::string& message)
 int
 GamePython::run(const Board& board)
 {
+    std::ofstream os("/dev/null");
+
     Player* player0 = new PlayerRandom(board, 1234);
-    Player* player1 = new PlayerUct(board, 1, 3, 4, 567890);
+    Player* player1 = new PlayerUct(board, 1, 3, 4, 567890, os);
 
     BoardState state(board);
     const int winner = run_game_loop(board, state, player0, player1, this);

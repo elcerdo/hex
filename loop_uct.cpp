@@ -69,13 +69,13 @@ play_one_sequence(GraphData& graph_data, RandomEngine& re, const HashedPair<Boar
 }
 
 void
-crunch_it_baby(GraphData& graph_data, RandomEngine& re, const HashedPair<BoardState>& hashed_state, const double duration_max, const bool prune)
+crunch_it_baby(GraphData& graph_data, RandomEngine& re, const HashedPair<BoardState>& hashed_state, const double duration_max, const bool prune, std::ostream& os)
 {
     const double start_time = get_double_time();
 
     if (!graph_data.contains(hashed_state))
     {
-        std::cout << "WARNING!!! unknown game state" << std::endl;
+        os << "WARNING!!! unknown game state" << std::endl;
         graph_data.get_or_create_node(hashed_state, re);
     }
 
@@ -86,7 +86,7 @@ crunch_it_baby(GraphData& graph_data, RandomEngine& re, const HashedPair<BoardSt
         graph_data.prune_below(root);
 
         const double prunning_end_time = get_double_time();
-        std::cout << "prunning took " << clock_it(prunning_end_time-prunning_start_time) << std::endl;
+        os << "prunning took " << clock_it(prunning_end_time-prunning_start_time) << std::endl;
     }
 
     int mc_count = 0;
@@ -101,5 +101,5 @@ crunch_it_baby(GraphData& graph_data, RandomEngine& re, const HashedPair<BoardSt
 
     double game_per_second = 0;
     if (current_time != mc_start_time) game_per_second = mc_count/(current_time-mc_start_time);
-    std::cout << "simulated " << mc_count << " games in " << clock_it(current_time-mc_start_time) << " (" << game_per_second << "games/s)" << std::endl;
+    os << "simulated " << mc_count << " games in " << clock_it(current_time-mc_start_time) << " (" << game_per_second << "games/s)" << std::endl;
 }

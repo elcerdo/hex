@@ -22,7 +22,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
     player1->player = 1;
     std::vector<Player*> players = {player0, player1};
 
-    cout << "hash " << std::hex << hash_value(state) << std::dec << endl;
+    //cout << "hash " << std::hex << hash_value(state) << std::dec << endl;
     for (Player* player : players) player->update(state);
     if (status) status->updateState(state);
 
@@ -30,7 +30,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
     int player_winner = state.getWinner();
     while (player_winner < 0)
     {
-        cout << "loop for p" << player_current << endl;
+        //cout << "loop for p" << player_current << endl;
         if (status) {
             std::stringstream ss;
             ss << "requesting move for " << colors[player_current];
@@ -38,7 +38,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
         }
         const Move move = players[player_current]->getMove();
 
-        cout << "playing move" << endl;
+        //cout << "playing move" << endl;
         if (!state.playMove(move))
         {
             cout << "bad move" << endl;
@@ -52,7 +52,7 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
             break;
         }
 
-        cout << "hash " << std::hex << hash_value(state) << std::dec << endl;
+        //cout << "hash " << std::hex << hash_value(state) << std::dec << endl;
         for (Player* player : players) player->update(state);
         if (status) status->updateState(state);
 
@@ -62,8 +62,8 @@ int run_game_loop(const Board& board, BoardState& state, Player* player0, Player
         player_current %= nplayers;
     }
 
-    cout << "finished" << endl;
-    cout << "p" << player_winner << " wins!!" << endl;
+    //cout << "finished" << endl;
+    //cout << "p" << player_winner << " wins!!" << endl;
     if (status)
     {
         std::stringstream ss;

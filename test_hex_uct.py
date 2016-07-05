@@ -26,16 +26,14 @@ print(state)
 
 class Status:
     def __init__(self):
-        self.messages = []
         self.states = []
     def updateState(self, state):
         self.states.append(state)
     def updateMessage(self, message):
-        self.messages.append(message)
+        print(message)
 
 status = Status()
 game = hex_uct.Game(status)
 winner = game.run(board)
 print(winner)
-print(len(status.messages), len(status.states))
-print(status.messages)
+print(len(status.states))
