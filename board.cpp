@@ -87,6 +87,12 @@ Board::Board(const int size) : graph(), coords(graph)
     }
 }
 
+std::ostream&
+operator<<(std::ostream& os, const Board::Coord& coord)
+{
+    return os << coord.first << "x" << coord.second;
+}
+
 struct SameStateMap
 {
     typedef Board::Graph::Edge Key;

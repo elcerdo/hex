@@ -310,8 +310,6 @@ GraphData::print_from_root_internal(std::ostream& os, const Node& root, const st
 
         const Move& move = arc_moves[oai];
         const Board::Coord& coord = state.board.coords[move];
-        std::stringstream move_ss;
-        move_ss << coord.first << "x" << coord.second;
 
         const UctData& child_uct_data = node_uct_datas[graph.target(oai)];
         assert( (root_uct_data.parent_player+1) % 2 == child_uct_data.parent_player );
@@ -321,7 +319,7 @@ GraphData::print_from_root_internal(std::ostream& os, const Node& root, const st
         new_indent_first_stream << std::fixed << std::setprecision(0) << indent;
         if (!last_arc) new_indent_first_stream << "├─";
         else new_indent_first_stream << "└─";
-        new_indent_first_stream << move_ss.str() << "─";
+        new_indent_first_stream << coord << "─";
         new_indent_first_stream << "(" << proba << "%)─<" << child_uct_data.count << ">─";
 
         std::stringstream new_indent_stream;

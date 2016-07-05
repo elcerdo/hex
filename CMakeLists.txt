@@ -40,6 +40,8 @@ target_link_libraries(hex_uct
     ${LEMON_LIBRARIES}
     )
 
+set_target_properties(hex_uct PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 qt4_wrap_cpp(sources_moc_gui
     viewer.h
     game_qt.h
@@ -83,5 +85,6 @@ add_library(hex_uct_ext SHARED
 target_link_libraries(hex_uct_ext
     ${Boost_PYTHON_LIBRARY}
     ${PYTHON_LIBRARY}
+    hex_uct
     )
 

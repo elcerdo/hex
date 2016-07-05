@@ -15,7 +15,7 @@ struct move_coord
 std::ostream&
 operator<<(std::ostream& os, const move_coord& foo)
 {
-    return os << foo.foo.first << "x" << foo.foo.second;
+    return os << foo.foo;
 }
 
 std::ostream&

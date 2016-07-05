@@ -27,6 +27,9 @@ struct Board
     friend size_t hash_value(const Board& board);
 };
 
+std::ostream&
+operator<<(std::ostream& os, const Board::Coord& coord);
+
 typedef Board::Node Move;
 typedef std::vector<Move> Moves;
 
