@@ -24,5 +24,18 @@ print(hex_uct.countNodes(board.graph), hex_uct.countEdges(board.graph))
 state = hex_uct.BoardState(board)
 print(state)
 
+class Status:
+    def __init__(self):
+        self.messages = []
+        self.states = []
+    def updateState(self, state):
+        self.states.append(state)
+    def updateMessage(self, message):
+        self.messages.append(message)
 
-
+status = Status()
+game = hex_uct.Game(status)
+winner = game.run(board)
+print(winner)
+print(len(status.messages), len(status.states))
+print(status.messages)
