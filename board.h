@@ -30,6 +30,9 @@ struct Board
 std::ostream&
 operator<<(std::ostream& os, const Board::Coord& coord);
 
+std::ostream&
+operator<<(std::ostream& os, const Board& board);
+
 typedef Board::Node Move;
 typedef std::vector<Move> Moves;
 
@@ -65,4 +68,6 @@ struct BoardState
     friend size_t hash_value(const BoardState& state);
 };
 
+std::ostream&
+operator<<(std::ostream& os, const BoardState& state);
 

@@ -3,44 +3,6 @@
 #include "loop_uct.h"
 #include <iostream>
 
-struct move_coord
-{
-    const Board::Coord foo;
-
-    move_coord(const Board& board, const Move& move) : foo(board.coords[move])
-    {
-    }
-};
-
-std::ostream&
-operator<<(std::ostream& os, const move_coord& foo)
-{
-    return os << foo.foo;
-}
-
-std::ostream&
-operator<<(std::ostream& os, const HashedPair<BoardState>& hashed_state)
-{
-    using std::endl;
-    os << "<BoardState ";
-    os << "b=" << std::hex << hashed_state.value.board_hash << std::dec << " ";
-    os << "h=" << std::hex << hashed_state.hash << std::dec << " ";
-    os << "w=" << hashed_state.value.getWinner() << " ";
-
-    bool first = true;
-    os << "a=[";
-    for (const Move& move : hashed_state.value.getAvailableMoves())
-    {
-        if (!first) os << ",";
-        os << move_coord(hashed_state.value.board, move);
-        first = false;
-    }
-    os << "]";
-
-    os << ">";
-    return os;
-}
-
 void
 fatal_error(const bool& assert_value, const std::string& message)
 {
@@ -183,7 +145,7 @@ int main(int argc, char* argv[])
         graph_data.print_from_root(cout, root, "", 1);
 
         const std::pair<Move, GraphData::UctData> best_move = graph_data.get_best_move(root, re);
-        cout << "best move is " << move_coord(board, best_move.first) << endl;
+        cout << "best move is " << board.coords[best_move.first] << endl;
     }
     cout << endl << endl;
 
@@ -206,7 +168,7 @@ int main(int argc, char* argv[])
 
         const Board::Node& aa = board.graph.nodeFromId(2);
         const Board::Node& bb = board.graph.nodeFromId(3);
-        cout << "aa " << move_coord(board, aa) << " bb " << move_coord(board, bb) << endl;
+        cout << "aa " << board.coords[aa] << " bb " << board.coords[bb] << endl;
         cout << "insert " << union_find.insert(aa) << " " << union_find.insert(bb) << endl;
         cout << "join " << union_find.join(aa, bb) << endl;
         cout << "join " << union_find.join(bb, aa) << endl;

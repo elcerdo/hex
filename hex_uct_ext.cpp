@@ -43,12 +43,21 @@ BOOST_PYTHON_MODULE(libhex_uct_ext)
     class_<Board::Coord>("Coord", init<Board::Coord::first_type, Board::Coord::second_type>())
         .def_readonly("x", &Board::Coord::first)
         .def_readonly("y", &Board::Coord::second);
-    class_<Board::Graph, boost::noncopyable>("Graph")
-        ;
+
+    class_<Board::Graph, boost::noncopyable>("Graph");
+
     class_<Board, boost::noncopyable>("Board", init<int>())
         .def("getNumberOfPlayers", &Board::getNumberOfPlayers)
         .def_readonly("graph", &Board::graph)
-        ;
+        .def(self_ns::str(self_ns::self));
+
+    class_<BoardState>("BoardState", init<const Board&>())
+        .def("getState", &BoardState::getState)
+        .def("getNextPlayer", &BoardState::getNextPlayer)
+        .def("getWinner", &BoardState::getWinner)
+        .def(self_ns::str(self_ns::self));
+
+
     /*
         .add_property("x", [](const Move& move){ return move.first; } );
 

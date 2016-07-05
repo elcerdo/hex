@@ -93,6 +93,18 @@ operator<<(std::ostream& os, const Board::Coord& coord)
     return os << coord.first << "x" << coord.second;
 }
 
+std::ostream&
+operator<<(std::ostream& os, const Board& board)
+{
+    os << "<Board ";
+    os << "h=" << std::hex << hash_value(board) << std::dec << " ";
+    os << "p=" << board.getNumberOfPlayers() << " ";
+    os << "v=" << lemon::countNodes(board.graph) << " ";
+    os << "e=" << lemon::countEdges(board.graph);
+    os << ">";
+    return os;
+}
+
 struct SameStateMap
 {
     typedef Board::Graph::Edge Key;
@@ -247,3 +259,29 @@ hash_value(const BoardState& state)
     return hash;
 }
 
+std::ostream&
+operator<<(std::ostream& os, const BoardState& state)
+{
+    os << "<BoardState ";
+    os << "b=" << std::hex << state.board_hash << std::dec << " ";
+    os << "h=" << std::hex << hash_value(state) << std::dec << " ";
+    os << "w=" << state.getWinner() << " ";
+
+    const Moves& moves = state.getAvailableMoves();
+    if (moves.size() < 10)
+    {
+        bool first = true;
+        os << "a=[";
+        for (const Move& move : moves)
+        {
+            if (!first) os << ",";
+            os << state.board.coords[move];
+            first = false;
+        }
+        os << "]";
+    }
+    else os << "a=" << moves.size();
+
+    os << ">";
+    return os;
+}
