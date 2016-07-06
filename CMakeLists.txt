@@ -5,14 +5,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 set(CMAKE_CXX_FLAGS "--std=c++11")
 
+set(Boost_PYTHON_NAME python3)
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS
-    python-py35
+    ${Boost_PYTHON_NAME}
     program_options
     REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
-set(Boost_PYTHON_LIBRARY boost_python-py35)
+set(Boost_PYTHON_LIBRARY boost_${Boost_PYTHON_NAME})
 
 find_package(PythonLibs 3.5 EXACT REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
