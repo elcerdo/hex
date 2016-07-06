@@ -24,12 +24,57 @@ countEdges(const Board::Graph& graph)
     return lemon::countEdges(graph);
 }
 
+boost::python::list
+getAvailableMoves(const BoardState& state)
+{
+    boost::python::list ret;
+    for (const Move& move : state.getAvailableMoves())
+        ret.append(move);
+    return ret;
+}
+
+Board::Coord
+getCoord(const Board& board, const Move& move)
+{
+    return board.coords[move];
+}
+
+struct PlayerPython : public Player
+{
+    boost::python::object update_callback;
+    boost::python::object get_move_callback;
+
+    PlayerPython(const Board& board, boost::python::object& player);
+    void update(const BoardState& state) override;
+    Move getMove() override;
+};
+
+PlayerPython::PlayerPython(const Board& board, boost::python::object& player) : Player(board, "python")
+{
+    update_callback = player.attr("update");
+    get_move_callback = player.attr("getMove");
+}
+
+void
+PlayerPython::update(const BoardState& state)
+{
+    update_callback(state);
+}
+
+Move
+PlayerPython::getMove()
+{
+    return boost::python::extract<Move>(get_move_callback(boost::ref(board), player));
+}
+
+
 struct GamePython : public Status
 {
     boost::python::object state_callback;
     boost::python::object message_callback;
+    boost::python::object player;
 
-    GamePython(boost::python::object& status);
+    GamePython(boost::python::object& status, boost::python::object& player);
 
     void updateState(const BoardState& state) override;
     void updateMessage(const std::string& message) override;
@@ -37,7 +82,7 @@ struct GamePython : public Status
     int run(const Board& board);
 };
 
-GamePython::GamePython(boost::python::object& status) : state_callback(), message_callback()
+GamePython::GamePython(boost::python::object& status, boost::python::object& player_) : state_callback(), message_callback(), player(player_)
 {
     state_callback = status.attr("updateState");
     message_callback = status.attr("updateMessage");
@@ -60,7 +105,7 @@ GamePython::run(const Board& board)
 {
     std::ofstream os("/dev/null");
 
-    Player* player0 = new PlayerRandom(board, 1234);
+    Player* player0 = new PlayerPython(board, player);
     Player* player1 = new PlayerUct(board, 1, 3, 4, 567890, os);
 
     BoardState state(board);
@@ -91,6 +136,8 @@ BOOST_PYTHON_MODULE(libhex_uct_ext)
     def("helloWorld", helloWorld);
     def("countNodes", countNodes);
     def("countEdges", countEdges);
+    def("getAvailableMoves", getAvailableMoves);
+    def("getCoord", getCoord);
 
     class_<Move>("Move");
 
@@ -103,15 +150,17 @@ BOOST_PYTHON_MODULE(libhex_uct_ext)
     class_<Board, boost::noncopyable>("Board", init<int>())
         .def("getNumberOfPlayers", &Board::getNumberOfPlayers)
         .def_readonly("graph", &Board::graph)
+        .def(self_ns::repr(self_ns::self))
         .def(self_ns::str(self_ns::self));
 
     class_<BoardState>("BoardState", init<const Board&>())
         .def("getState", &BoardState::getState)
         .def("getNextPlayer", &BoardState::getNextPlayer)
         .def("getWinner", &BoardState::getWinner)
+        .def(self_ns::repr(self_ns::self))
         .def(self_ns::str(self_ns::self));
 
-    class_<GamePython>("Game", init<boost::python::object&>())
+    class_<GamePython>("Game", init<boost::python::object&, boost::python::object&>())
         .def("run", &GamePython::run);
 
     /*

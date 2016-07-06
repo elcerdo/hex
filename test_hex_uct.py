@@ -30,10 +30,29 @@ class Status:
     def updateState(self, state):
         self.states.append(state)
     def updateMessage(self, message):
-        print(message)
+        print("status", message)
+
+class Player:
+    def __init__(self):
+        self.state = None
+    def update(self, state):
+        print("player", state)
+        self.state = state
+    def getMove(self, board, player):
+        assert( self.state is not None )
+        moves = hex_uct.getAvailableMoves(self.state)
+        coords = []
+        for move in moves:
+            coord = hex_uct.getCoord(board, move)
+            coords.append((coord.x, coord.y))
+        print("player", board, player, coords)
+        assert( moves )
+        return moves[0]
 
 status = Status()
-game = hex_uct.Game(status)
+player = Player()
+game = hex_uct.Game(status, player)
 winner = game.run(board)
 print(winner)
 print(len(status.states))
+print(status.states)

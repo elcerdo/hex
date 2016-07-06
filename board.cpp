@@ -268,7 +268,7 @@ operator<<(std::ostream& os, const BoardState& state)
     os << "w=" << state.getWinner() << " ";
 
     const Moves& moves = state.getAvailableMoves();
-    if (moves.size() < 10)
+#if !defined(NDEBUG)
     {
         bool first = true;
         os << "a=[";
@@ -280,7 +280,9 @@ operator<<(std::ostream& os, const BoardState& state)
         }
         os << "]";
     }
-    else os << "a=" << moves.size();
+#else
+    os << "a=" << moves.size();
+#endif
 
     os << ">";
     return os;
