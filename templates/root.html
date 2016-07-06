@@ -3,97 +3,13 @@
 {% block title %}welcome to hex uct bot !!!{% endblock %}
 
 {% block head %}
-<script type="text/javascript" src='{{ url_for("static", filename="three.js") }}'></script>
-<script type="text/javascript">
-$(document).ready( function() {
-    var canvas = document.getElementById("canvas");
-    console.log(canvas);
-
-    var canvas_width = 800;
-    var canvas_height = 600;
-    console.log(canvas_width, canvas_height);
-
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera( 75, canvas_width/canvas_height, 0.1, 1000 );
-    camera.position.z = -4;
-    camera.position.y = -1;
-    camera.lookAt( new THREE.Vector3(0,0,0) );
-    var renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setSize( canvas_width, canvas_height );
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.shadowMap.enabled = true;
-    canvas.appendChild( renderer.domElement );
-
-    var clock = new THREE.Clock();
-    {
-        var light_ambient = new THREE.AmbientLight( 0xffffff, .5 );
-        scene.add(light_ambient);
-    }
-    {
-        var light_directional = new THREE.DirectionalLight( 0xffffff, .5 );
-        light_directional.position.set(0,5,0);
-        light_directional.castShadow = true;
-        light_directional.shadow.camera.top = 15;
-        light_directional.shadow.camera.bottom = -15;
-        light_directional.shadow.mapSize.width = 1024;
-        light_directional.shadow.mapSize.height = 1024;
-        scene.add( light_directional );
-        //scene.add( new THREE.CameraHelper(light_directional.shadow.camera) );
-    }
-
-    var cube = undefined;
-    {
-        var geometry = new THREE.TorusKnotBufferGeometry( 1, .1, 100, 10, 2, 5 );
-        var material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
-        cube = new THREE.Mesh( geometry, material );
-        cube.castShadow = true;
-        //cube.scale.multiplyScalar(.5);
-        scene.add( cube );
-    }
-
-    var plane = undefined;
-    {
-        var geometry = new THREE.PlaneBufferGeometry( 15, 30, 15*2, 30*2  );
-        var material = new THREE.MeshPhongMaterial({ color: 0xffffff});
-        plane = new THREE.Mesh( geometry, material );
-        plane.position.y =  -2;
-        plane.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), -Math.PI/2);
-        plane.receiveShadow = true;
-        scene.add( plane );
-    }
-
-    var render = function () {
-
-        var delta = clock.getDelta();
-
-        cube.rotation.x += delta;
-        cube.rotation.y += delta;
-
-        renderer.render(scene, camera);
-
-        requestAnimationFrame( render );
-    };
-
-    render();
-
-});
-</script>
-<style type="text/css">
-#canvas {
-    width: 800px;
-    height: 600px;
-    background-color: red;
-}
-</style>
 {% endblock %}
 
 {% block content %}
-<div id="canvas">
-</div>
 {% if games %}
 <ul class="games">
-    {% for game in games %}
-    <li>{{ game[0] }}</li>
+    {% for game_id, game_values in games.items() %}
+    <li><a href="{{ url_for("displaygame", game_id=game_id) }}">{{ game_values }}</a></li>
     {% endfor %}
 </ul>
 {% else %}
